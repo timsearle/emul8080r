@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		2266546A259E35BC00297D3B /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22665469259E35BC00297D3B /* main.swift */; };
 		22665472259E362C00297D3B /* OpCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22665471259E362C00297D3B /* OpCode.swift */; };
+		2266547E259F792000297D3B /* 8080.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2266547D259F792000297D3B /* 8080.swift */; };
+		22665481259F7BDA00297D3B /* Disassembler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22665480259F7BDA00297D3B /* Disassembler.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,7 +30,8 @@
 		22665469259E35BC00297D3B /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		22665471259E362C00297D3B /* OpCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpCode.swift; sourceTree = "<group>"; };
 		22665474259E371A00297D3B /* invaders.rom */ = {isa = PBXFileReference; lastKnownFileType = file; path = invaders.rom; sourceTree = "<group>"; };
-		22665476259F656800297D3B /* invaders.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = invaders.h; sourceTree = "<group>"; };
+		2266547D259F792000297D3B /* 8080.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 8080.swift; sourceTree = "<group>"; };
+		22665480259F7BDA00297D3B /* Disassembler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Disassembler.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,10 +64,11 @@
 		22665468259E35BC00297D3B /* Emul8080r */ = {
 			isa = PBXGroup;
 			children = (
-				22665476259F656800297D3B /* invaders.h */,
 				22665474259E371A00297D3B /* invaders.rom */,
 				22665469259E35BC00297D3B /* main.swift */,
 				22665471259E362C00297D3B /* OpCode.swift */,
+				2266547D259F792000297D3B /* 8080.swift */,
+				22665480259F7BDA00297D3B /* Disassembler.swift */,
 			);
 			path = Emul8080r;
 			sourceTree = "<group>";
@@ -126,8 +130,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2266547E259F792000297D3B /* 8080.swift in Sources */,
 				2266546A259E35BC00297D3B /* main.swift in Sources */,
 				22665472259E362C00297D3B /* OpCode.swift in Sources */,
+				22665481259F7BDA00297D3B /* Disassembler.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

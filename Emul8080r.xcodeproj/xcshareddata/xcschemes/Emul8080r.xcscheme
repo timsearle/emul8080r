@@ -52,7 +52,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "/Users/tim/Dev/Emulator/Emul8080r/Emul8080r/invaders.h"
+            argument = "/Users/tim/Dev/Emulator/Emul8080r/Emul8080r/invaders.rom"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
