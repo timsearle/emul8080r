@@ -4,10 +4,12 @@ enum OpCode: UInt8, CustomStringConvertible {
     case nop = 0x00
     case dcr_b = 0x05
     case mvi_b = 0x06
+    case dad_b_c = 0x09
     case dcr_d = 0x0d
     case rrc = 0x0f
     case lxi_d_e = 0x11
     case inx_d_e = 0x13
+    case dad_d_e = 0x19
     case ldax_d_e = 0x1a
     case lxi_h_l = 0x21
     case shld = 0x22
@@ -62,7 +64,7 @@ enum OpCode: UInt8, CustomStringConvertible {
 
     var size: Int {
         switch self {
-        case .nop, .dcr_b, .dcr_d, .rrc, .inx_d_e, .ldax_d_e, .inx_h_l, .daa, .dad_h_l, .dcx_h_l, .dcr_m, .mov_d_m, .mov_e_m, .mov_h_m, .mov_l_a, .mov_m_a, .mov_a_d, .mov_a_e, .mov_a_h, .mov_a_m, .ana_b, .ana_c, .ana_d, .ana_e, .ana_h, .ana_l, .ana_m, .ana_a, .xra_a, .pop_b, .push_b, .ret, .pop_d, .push_d, .pop_h, .push_h, .xchg, .pop_psw, .push_psw, .ei:
+        case .nop, .dcr_b, .dad_b_c, .dcr_d, .rrc, .inx_d_e, .dad_d_e, .ldax_d_e, .inx_h_l, .daa, .dad_h_l, .dcx_h_l, .dcr_m, .mov_d_m, .mov_e_m, .mov_h_m, .mov_l_a, .mov_m_a, .mov_a_d, .mov_a_e, .mov_a_h, .mov_a_m, .ana_b, .ana_c, .ana_d, .ana_e, .ana_h, .ana_l, .ana_m, .ana_a, .xra_a, .pop_b, .push_b, .ret, .pop_d, .push_d, .pop_h, .push_h, .xchg, .pop_psw, .push_psw, .ei:
             return 1
         case .mvi_b, .mvi_a, .adi, .out, .in, .cpi:
             return 2
@@ -81,12 +83,16 @@ enum OpCode: UInt8, CustomStringConvertible {
             return "DCR D"
         case .mvi_b:
             return "MVI B,#"
+        case .dad_b_c:
+            return "DAD B C"
         case .rrc:
             return "RRC"
         case .lxi_d_e:
             return "LXI D E,#"
         case .inx_d_e:
             return "INX D E"
+        case .dad_d_e:
+            return "DAD D E"
         case .ldax_d_e:
             return "LDAX D E"
         case .lxi_h_l:
