@@ -6,8 +6,13 @@ public final class InvaderMachine {
 
     public init(rom: Data) {
         cpu = CPU(memory: [UInt8](repeating: 0, count: 65536))
+        cpu.load(data)
         cpu.machineIn = machineIn
         cpu.machineOut = machineOut
+    }
+
+    public func play() throws {
+        try cpu.start()
     }
 
     private func machineIn(_ port: UInt8) -> UInt8 {
@@ -15,7 +20,8 @@ public final class InvaderMachine {
         case 3:
             return shiftRegister.in(port: port)
         default:
-            fatalError("Unimplemented port")
+            print("Unimplemented port \(port)")
+            return 0
         }
     }
 
@@ -24,7 +30,7 @@ public final class InvaderMachine {
         case 2, 4:
             return shiftRegister.out(port: port, value: value)
         default:
-            fatalError("Unimplemented port")
+            print("Unimplemented port \(port)")
         }
     }
 }

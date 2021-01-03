@@ -89,7 +89,7 @@
 		2266548D25A22A6A00297D3B /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				2266549725A24C3500297D3B /* Space Invader */,
+				2266549725A24C3500297D3B /* Space Invaders */,
 				2266549625A24C3000297D3B /* 8080 */,
 			);
 			path = Models;
@@ -106,13 +106,13 @@
 			path = 8080;
 			sourceTree = "<group>";
 		};
-		2266549725A24C3500297D3B /* Space Invader */ = {
+		2266549725A24C3500297D3B /* Space Invaders */ = {
 			isa = PBXGroup;
 			children = (
 				2266549325A24C2C00297D3B /* ShiftRegister.swift */,
 				2266549025A24AF600297D3B /* InvaderMachine.swift */,
 			);
-			path = "Space Invader";
+			path = "Space Invaders";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
