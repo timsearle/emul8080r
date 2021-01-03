@@ -5,8 +5,16 @@ public class CPU {
         case unhandledOperation(OpCode)
     }
 
-    private var state = State8080()
+    private var state: State8080
+    private let machineIn: ((_ device: UInt8) -> UInt8)?
+    private let machineOut: ((_ accumulator: UInt8, _ device: UInt8) -> Void)?
     private var disassembler: Disassembler!
+
+    public init(memory: [UInt8], machineIn: ((_ device: UInt8) -> UInt8)? = nil, machineOut: ((_ accumulator: UInt8, _ device: UInt8) -> Void)? = nil) {
+        self.state = State8080(memory: memory)
+        self.machineIn = machineIn
+        self.machineOut = machineOut
+    }
 
     public func load(_ data: Data) {
         for (offset, byte) in data.enumerated() {
@@ -182,14 +190,16 @@ public class CPU {
             case .jnc:
                 throw Error.unhandledOperation(code)
             case .out:
-                // TODO: Review the output hardware codes for sound etc
-                break
+                let accumulator = state.registers.a
+                let device = state.memory[state.pc + 1]
+                machineOut?(accumulator, device)
             case .push_d:
                 throw Error.unhandledOperation(code)
             case .jc:
                 throw Error.unhandledOperation(code)
             case .in:
-                throw Error.unhandledOperation(code)
+                let device = state.memory[state.pc + 1]
+                state.registers.a = machineIn?(device) ?? state.registers.a
             case .pop_h:
                 throw Error.unhandledOperation(code)
             case .push_h:
