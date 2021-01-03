@@ -5,15 +5,14 @@ public class CPU {
         case unhandledOperation(OpCode)
     }
 
+    var machineIn: ((_ device: UInt8) -> UInt8)?
+    var machineOut: ((_ accumulator: UInt8, _ device: UInt8) -> Void)?
+
     private var state: State8080
-    private let machineIn: ((_ device: UInt8) -> UInt8)?
-    private let machineOut: ((_ accumulator: UInt8, _ device: UInt8) -> Void)?
     private var disassembler: Disassembler!
 
-    public init(memory: [UInt8], machineIn: ((_ device: UInt8) -> UInt8)? = nil, machineOut: ((_ accumulator: UInt8, _ device: UInt8) -> Void)? = nil) {
+    public init(memory: [UInt8]) {
         self.state = State8080(memory: memory)
-        self.machineIn = machineIn
-        self.machineOut = machineOut
     }
 
     public func load(_ data: Data) {

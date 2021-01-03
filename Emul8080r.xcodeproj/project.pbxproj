@@ -13,6 +13,8 @@
 		22665481259F7BDA00297D3B /* Disassembler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22665480259F7BDA00297D3B /* Disassembler.swift */; };
 		2266548525A2287400297D3B /* CPU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2266548425A2287400297D3B /* CPU.swift */; };
 		2266548925A2295A00297D3B /* UInt8+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2266548825A2295A00297D3B /* UInt8+Extensions.swift */; };
+		2266549125A24AF600297D3B /* InvaderMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2266549025A24AF600297D3B /* InvaderMachine.swift */; };
+		2266549425A24C2C00297D3B /* ShiftRegister.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2266549325A24C2C00297D3B /* ShiftRegister.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -35,6 +37,8 @@
 		22665480259F7BDA00297D3B /* Disassembler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Disassembler.swift; sourceTree = "<group>"; };
 		2266548425A2287400297D3B /* CPU.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPU.swift; sourceTree = "<group>"; };
 		2266548825A2295A00297D3B /* UInt8+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UInt8+Extensions.swift"; sourceTree = "<group>"; };
+		2266549025A24AF600297D3B /* InvaderMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvaderMachine.swift; sourceTree = "<group>"; };
+		2266549325A24C2C00297D3B /* ShiftRegister.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShiftRegister.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,12 +89,30 @@
 		2266548D25A22A6A00297D3B /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				2266549725A24C3500297D3B /* Space Invader */,
+				2266549625A24C3000297D3B /* 8080 */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		2266549625A24C3000297D3B /* 8080 */ = {
+			isa = PBXGroup;
+			children = (
 				22665471259E362C00297D3B /* OpCode.swift */,
 				2266547D259F792000297D3B /* State.swift */,
 				22665480259F7BDA00297D3B /* Disassembler.swift */,
 				2266548425A2287400297D3B /* CPU.swift */,
 			);
-			path = Models;
+			path = 8080;
+			sourceTree = "<group>";
+		};
+		2266549725A24C3500297D3B /* Space Invader */ = {
+			isa = PBXGroup;
+			children = (
+				2266549325A24C2C00297D3B /* ShiftRegister.swift */,
+				2266549025A24AF600297D3B /* InvaderMachine.swift */,
+			);
+			path = "Space Invader";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -151,9 +173,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				2266547E259F792000297D3B /* State.swift in Sources */,
+				2266549425A24C2C00297D3B /* ShiftRegister.swift in Sources */,
 				2266546A259E35BC00297D3B /* main.swift in Sources */,
 				2266548525A2287400297D3B /* CPU.swift in Sources */,
 				22665472259E362C00297D3B /* OpCode.swift in Sources */,
+				2266549125A24AF600297D3B /* InvaderMachine.swift in Sources */,
 				2266548925A2295A00297D3B /* UInt8+Extensions.swift in Sources */,
 				22665481259F7BDA00297D3B /* Disassembler.swift in Sources */,
 			);
