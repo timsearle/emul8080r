@@ -8,6 +8,8 @@ public class CPU {
     var machineIn: ((_ device: UInt8) -> UInt8)?
     var machineOut: ((_ accumulator: UInt8, _ device: UInt8) -> Void)?
 
+    private var lastInterrupt = Date().timeIntervalSince1970
+
     private var state: State8080
     private var disassembler: Disassembler!
 
@@ -21,6 +23,13 @@ public class CPU {
         }
 
         disassembler = Disassembler(data: data)
+    }
+
+    public func interrupt(_ value: Int) {
+        state.memory[state.sp - 1] = UInt8((state.pc >> 8) & 0xff)
+        state.memory[state.sp - 2] = UInt8(state.pc & 0xff)
+        state.sp = state.sp - 2
+        state.pc = 8 * value
     }
 
     public func start() throws {
@@ -216,7 +225,20 @@ public class CPU {
             }
 
             state.pc += code.size
+
+            // Interrupt simulation
+            let time = Date().timeIntervalSince1970
+
+            if  time - lastInterrupt > (1/60) {
+                interrupt(2)
+                lastInterrupt = time
+            }
         }
+    }
+
+    // todo: implement convenience function for pushing onto the stack
+    private func push() {
+
     }
 
     private func updateConditionBits(_ value: Int, state: inout State8080) {

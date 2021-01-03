@@ -1,8 +1,15 @@
 import Foundation
 
 public final class InvaderMachine {
+    public enum ButtonState {
+        case down
+        case up
+    }
+
     private let cpu: CPU
     private let shiftRegister = ShiftRegister()
+
+    private var inputPorts: [UInt8] = [0b00001110, 0b00001000, 0, 0]
 
     public init(rom: Data) {
         cpu = CPU(memory: [UInt8](repeating: 0, count: 65536))
@@ -13,6 +20,33 @@ public final class InvaderMachine {
 
     public func play() throws {
         try cpu.start()
+    }
+
+    public func fire(state: ButtonState) {
+        switch state {
+        case .down:
+            inputPorts[0] |= 0x10
+        case .up:
+            inputPorts[0] &= 0xef
+        }
+    }
+
+    public func left(state: ButtonState) {
+        switch state {
+        case .down:
+            inputPorts[0] |= 0x20
+        case .up:
+            inputPorts[0] &= 0xdf
+        }
+    }
+
+    public func right(state: ButtonState) {
+        switch state {
+        case .down:
+            inputPorts[0] |= 0x40
+        case .up:
+            inputPorts[0] &= 0xbf
+        }
     }
 
     private func machineIn(_ port: UInt8) -> UInt8 {
