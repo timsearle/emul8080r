@@ -1,6 +1,6 @@
 import Foundation
 
-struct ConditionBits {
+public struct ConditionBits {
     var zero: UInt8 = 0
     var sign: UInt8 = 0
     var parity: UInt8 = 0
@@ -8,7 +8,7 @@ struct ConditionBits {
     var aux_carry: UInt8 = 0
 }
 
-struct Registers: CustomStringConvertible {
+public struct Registers: CustomStringConvertible {
     var a: UInt8 = 0
     var b: UInt8 = 0
     var c: UInt8 = 0
@@ -17,7 +17,7 @@ struct Registers: CustomStringConvertible {
     var h: UInt8 = 0
     var l: UInt8 = 0
 
-    var description: String {
+    public var description: String {
         """
         a: \(a.hex)
         b: \(b.hex)
@@ -30,7 +30,7 @@ struct Registers: CustomStringConvertible {
     }
 }
 
-struct State8080: CustomStringConvertible {
+public struct State8080: CustomStringConvertible {
     var registers = Registers()
 
     var sp: Int = 0
@@ -38,7 +38,7 @@ struct State8080: CustomStringConvertible {
     var condition_bits = ConditionBits()
     var memory = [UInt8](repeating: 0, count: 65536)
 
-    var description: String {
+    public var description: String {
         """
         \n
         -= 8080 Internal State =-

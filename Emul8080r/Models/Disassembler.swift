@@ -1,10 +1,10 @@
 import Foundation
 
-enum DisassemblerError: Error {
-    case unknownCode(String)
-}
-
 struct Disassembler {
+    enum Error: Swift.Error {
+        case unknownCode(String)
+    }
+
     let data: Data
 
     func run() throws {
@@ -22,7 +22,7 @@ struct Disassembler {
 
     func disassembleOpCode(from data: Data, offset: Int) throws -> Int {
         guard let code = OpCode(rawValue: data[offset]) else {
-            throw DisassemblerError.unknownCode(String(format: "%02x", data[offset]))
+            throw Error.unknownCode(String(format: "%02x", data[offset]))
         }
 
         var value = 1
