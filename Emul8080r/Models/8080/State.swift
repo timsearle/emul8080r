@@ -6,6 +6,10 @@ public struct ConditionBits {
     var parity: UInt8 = 0
     var carry: UInt8 = 0
     var aux_carry: UInt8 = 0
+
+    var byte: UInt8 {
+        UInt8("\(sign)\(zero)0\(aux_carry)0\(parity)1\(carry)", radix: 2)!
+    }
 }
 
 public struct Registers: CustomStringConvertible {

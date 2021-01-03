@@ -217,7 +217,11 @@ public class CPU {
             case .pop_psw:
                 throw Error.unhandledOperation(code)
             case .push_psw:
-                throw Error.unhandledOperation(code)
+                let accumulator = state.registers.a
+                let condition_byte = state.condition_bits.byte
+                state.memory[state.sp - 1] = accumulator
+                state.memory[state.sp - 2] = condition_byte
+                state.sp = state.sp - 2
             case .ei:
                 throw Error.unhandledOperation(code)
             case .cpi:
