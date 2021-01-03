@@ -173,7 +173,11 @@ public class CPU {
                 state.pc = Int("\(state.memory[state.pc + 2].hex)\(state.memory[state.pc + 1].hex)", radix: 16)!
                 continue
             case .push_b:
-                throw Error.unhandledOperation(code)
+                let b = state.registers.b
+                let c = state.registers.c
+                state.memory[state.sp - 1] = b
+                state.memory[state.sp - 2] = c
+                state.sp = state.sp - 2
             case .adi:
                 throw Error.unhandledOperation(code)
             case .ret:
@@ -202,7 +206,11 @@ public class CPU {
                 let device = state.memory[state.pc + 1]
                 machineOut?(accumulator, device)
             case .push_d:
-                throw Error.unhandledOperation(code)
+                let d = state.registers.b
+                let e = state.registers.c
+                state.memory[state.sp - 1] = d
+                state.memory[state.sp - 2] = e
+                state.sp = state.sp - 2
             case .jc:
                 throw Error.unhandledOperation(code)
             case .in:
@@ -211,7 +219,11 @@ public class CPU {
             case .pop_h:
                 throw Error.unhandledOperation(code)
             case .push_h:
-                throw Error.unhandledOperation(code)
+                let h = state.registers.h
+                let l = state.registers.l
+                state.memory[state.sp - 1] = h
+                state.memory[state.sp - 2] = l
+                state.sp = state.sp - 2
             case .xchg:
                 throw Error.unhandledOperation(code)
             case .pop_psw:
