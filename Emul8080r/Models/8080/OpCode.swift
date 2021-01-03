@@ -58,13 +58,14 @@ enum OpCode: UInt8, CustomStringConvertible {
     case push_h = 0xe5
     case xchg = 0xeb
     case pop_psw = 0xf1
+    case di = 0xf3
     case push_psw = 0xf5
     case ei = 0xfb
     case cpi = 0xfe
 
     var size: Int {
         switch self {
-        case .nop, .dcr_b, .dad_b_c, .dcr_d, .rrc, .inx_d_e, .dad_d_e, .ldax_d_e, .inx_h_l, .daa, .dad_h_l, .dcx_h_l, .dcr_m, .mov_d_m, .mov_e_m, .mov_h_m, .mov_l_a, .mov_m_a, .mov_a_d, .mov_a_e, .mov_a_h, .mov_a_m, .ana_b, .ana_c, .ana_d, .ana_e, .ana_h, .ana_l, .ana_m, .ana_a, .xra_a, .pop_b, .push_b, .ret, .pop_d, .push_d, .pop_h, .push_h, .xchg, .pop_psw, .push_psw, .ei:
+        case .nop, .dcr_b, .dad_b_c, .dcr_d, .rrc, .inx_d_e, .dad_d_e, .ldax_d_e, .inx_h_l, .daa, .dad_h_l, .dcx_h_l, .dcr_m, .mov_d_m, .mov_e_m, .mov_h_m, .mov_l_a, .mov_m_a, .mov_a_d, .mov_a_e, .mov_a_h, .mov_a_m, .ana_b, .ana_c, .ana_d, .ana_e, .ana_h, .ana_l, .ana_m, .ana_a, .xra_a, .pop_b, .push_b, .ret, .pop_d, .push_d, .pop_h, .push_h, .xchg, .pop_psw, .di, .push_psw, .ei:
             return 1
         case .mvi_b, .mvi_a, .adi, .out, .in, .cpi:
             return 2
@@ -189,6 +190,8 @@ enum OpCode: UInt8, CustomStringConvertible {
             return "XCHG"
         case .pop_psw:
             return "POP PSW"
+        case .di:
+            return "DI"
         case .push_psw:
             return "PUSH PSW"
         case .cpi:

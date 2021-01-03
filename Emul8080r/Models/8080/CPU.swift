@@ -26,6 +26,7 @@ public class CPU {
     }
 
     public func interrupt(_ value: Int) {
+        state.inte = 0x00 // Reset the interrupt to disabled
         state.memory[state.sp - 1] = UInt8((state.pc >> 8) & 0xff)
         state.memory[state.sp - 2] = UInt8(state.pc & 0xff)
         state.sp = state.sp - 2
@@ -228,6 +229,8 @@ public class CPU {
                 throw Error.unhandledOperation(code)
             case .pop_psw:
                 throw Error.unhandledOperation(code)
+            case .di:
+                state.inte = 0x00
             case .push_psw:
                 let accumulator = state.registers.a
                 let condition_byte = state.condition_bits.byte
@@ -235,17 +238,17 @@ public class CPU {
                 state.memory[state.sp - 2] = condition_byte
                 state.sp = state.sp - 2
             case .ei:
-                throw Error.unhandledOperation(code)
+                state.inte = 0x01
             case .cpi:
                 throw Error.unhandledOperation(code)
             }
 
             state.pc += code.size
 
-            // Interrupt simulation
+            // Naive interrupt simulation
             let time = Date().timeIntervalSince1970
 
-            if  time - lastInterrupt > (1/60) {
+            if  time - lastInterrupt > (1/60) && state.inte == 0x01 {
                 interrupt(2)
                 lastInterrupt = time
             }

@@ -42,6 +42,8 @@ public struct State8080: CustomStringConvertible {
     var condition_bits = ConditionBits()
     var memory = [UInt8](repeating: 0, count: 65536)
 
+    var inte = UInt8(0) // Interrupts Enabled
+
     public var description: String {
         """
         \n
