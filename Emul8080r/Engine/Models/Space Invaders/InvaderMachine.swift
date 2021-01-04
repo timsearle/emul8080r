@@ -9,6 +9,9 @@ public final class InvaderMachine {
     private let cpu: CPU
     private let shiftRegister = ShiftRegister()
     private let videoController = ShiftRegister()
+    private var lastExecutionTime: TimeInterval = 0
+    private var nextInterrupt: TimeInterval = 0
+    private var whichInterrupt: Int = 0
 
     private var inputPorts: [UInt8] = [0b00001110, 0b00001000, 0, 0]
 
@@ -16,15 +19,30 @@ public final class InvaderMachine {
         Array(cpu.memory[0x2400...0x3FFF])
     }
 
-    public init(rom: Data) {
-        cpu = CPU(memory: [UInt8](repeating: 0, count: 65536))
+    public init(rom: Data, loggingEnabled: Bool = false) {
+        cpu = CPU(memory: [UInt8](repeating: 0, count: 65536), loggingEnabled: loggingEnabled)
         cpu.load(rom)
         cpu.machineIn = machineIn
         cpu.machineOut = machineOut
     }
 
     public func play() throws {
-        try cpu.start()
+        if lastExecutionTime == 0.0 {
+            lastExecutionTime = Date().timeIntervalSince1970
+            nextInterrupt = lastExecutionTime + 0.16
+            whichInterrupt = 1
+        }
+
+        Timer.scheduledTimer(withTimeInterval: 0.001, repeats: true) { _ in
+            self.lastExecutionTime = try! self.cpu.start(previousExecutionTime: self.lastExecutionTime, interruptProvider: {
+                let now = Date().timeIntervalSince1970
+                if now > self.nextInterrupt {
+                    self.cpu.interrupt(self.whichInterrupt)
+                    self.whichInterrupt = self.whichInterrupt == 1 ? 2 : 1
+                    self.nextInterrupt = now + 0.08
+                }
+            })
+        }
     }
 
     public func fire(state: ButtonState) {
@@ -59,7 +77,7 @@ public final class InvaderMachine {
         case 3:
             return shiftRegister.in(port: port)
         default:
-            print("Unimplemented port \(port)")
+            print("Unimplemented IN port \(port)")
             return 0
         }
     }
@@ -69,7 +87,7 @@ public final class InvaderMachine {
         case 2, 4:
             return shiftRegister.out(port: port, value: value)
         default:
-            print("Unimplemented port \(port)")
+            print("Unimplemented OUT port \(port)")
         }
     }
 }

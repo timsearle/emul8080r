@@ -17,12 +17,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let _ = (scene as? UIWindowScene) else { return }
-
-        let romPath = CommandLine.arguments[1]
-        let data = try! Data(contentsOf: URL(fileURLWithPath: romPath))
-
-        let spaceInvaders = InvaderMachine(rom: data)
-        try! spaceInvaders.play()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

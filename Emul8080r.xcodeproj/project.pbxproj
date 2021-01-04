@@ -20,6 +20,8 @@
 		22B63DA325A39593008E785F /* OpCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22665471259E362C00297D3B /* OpCode.swift */; };
 		22B63DA425A39593008E785F /* Disassembler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22665480259F7BDA00297D3B /* Disassembler.swift */; };
 		22B63DA625A3959A008E785F /* UInt8+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2266548825A2295A00297D3B /* UInt8+Extensions.swift */; };
+		22B63DAA25A399EA008E785F /* UIImage+Bitmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B63DA925A399EA008E785F /* UIImage+Bitmap.swift */; };
+		22B63DAE25A39A13008E785F /* Bitmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B63DAD25A39A13008E785F /* Bitmap.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +40,8 @@
 		22B63D8F25A3950A008E785F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		22B63D9225A3950A008E785F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		22B63D9425A3950A008E785F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		22B63DA925A399EA008E785F /* UIImage+Bitmap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Bitmap.swift"; sourceTree = "<group>"; };
+		22B63DAD25A39A13008E785F /* Bitmap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bitmap.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +111,7 @@
 		22B63D8525A39509008E785F /* Emul8080r */ = {
 			isa = PBXGroup;
 			children = (
+				22B63DA825A399DC008E785F /* iOS */,
 				22B63D9B25A39527008E785F /* Engine */,
 				22B63D8625A39509008E785F /* AppDelegate.swift */,
 				22B63D8825A39509008E785F /* SceneDelegate.swift */,
@@ -126,6 +131,15 @@
 				2266548725A2294A00297D3B /* Extensions */,
 			);
 			path = Engine;
+			sourceTree = "<group>";
+		};
+		22B63DA825A399DC008E785F /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				22B63DA925A399EA008E785F /* UIImage+Bitmap.swift */,
+				22B63DAD25A39A13008E785F /* Bitmap.swift */,
+			);
+			path = iOS;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -202,6 +216,8 @@
 				22B63DA325A39593008E785F /* OpCode.swift in Sources */,
 				22B63DA425A39593008E785F /* Disassembler.swift in Sources */,
 				22B63DA125A39593008E785F /* InvaderMachine.swift in Sources */,
+				22B63DAE25A39A13008E785F /* Bitmap.swift in Sources */,
+				22B63DAA25A399EA008E785F /* UIImage+Bitmap.swift in Sources */,
 				22B63D8B25A39509008E785F /* ViewController.swift in Sources */,
 				22B63D8725A39509008E785F /* AppDelegate.swift in Sources */,
 				22B63DA025A39593008E785F /* State.swift in Sources */,

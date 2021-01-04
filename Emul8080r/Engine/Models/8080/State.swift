@@ -41,7 +41,7 @@ public struct State8080: CustomStringConvertible {
     var pc: Int = 0
     var condition_bits = ConditionBits()
 
-    var inte = UInt8(0) // Interrupts Enabled
+    var inte = UInt8(1) // Interrupts Enabled
 
     public var description: String {
         """
