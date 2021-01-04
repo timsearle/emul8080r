@@ -18,7 +18,7 @@ public final class InvaderMachine {
 
     public init(rom: Data) {
         cpu = CPU(memory: [UInt8](repeating: 0, count: 65536))
-        cpu.load(data)
+        cpu.load(rom)
         cpu.machineIn = machineIn
         cpu.machineOut = machineOut
     }

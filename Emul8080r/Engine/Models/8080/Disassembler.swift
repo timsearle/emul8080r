@@ -12,7 +12,7 @@ struct Disassembler {
 
         while offset < data.count {
             do {
-                offset += try disassembleOpCode(from: data, offset: offset)
+                offset += try disassembleOpCode(offset: offset)
             } catch {
                 print(offset)
                 throw error
@@ -20,7 +20,7 @@ struct Disassembler {
         }
     }
 
-    func disassembleOpCode(from data: Data, offset: Int) throws -> Int {
+    func disassembleOpCode(offset: Int) throws -> Int {
         guard let code = OpCode(rawValue: data[offset]) else {
             throw Error.unknownCode(String(format: "%02x", data[offset]))
         }

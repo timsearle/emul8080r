@@ -14,8 +14,8 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "22665465259E35BC00297D3B"
-               BuildableName = "Emul8080r"
+               BlueprintIdentifier = "22B63D8325A39509008E785F"
+               BuildableName = "Emul8080r.app"
                BlueprintName = "Emul8080r"
                ReferencedContainer = "container:Emul8080r.xcodeproj">
             </BuildableReference>
@@ -44,8 +44,8 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "22665465259E35BC00297D3B"
-            BuildableName = "Emul8080r"
+            BlueprintIdentifier = "22B63D8325A39509008E785F"
+            BuildableName = "Emul8080r.app"
             BlueprintName = "Emul8080r"
             ReferencedContainer = "container:Emul8080r.xcodeproj">
          </BuildableReference>
@@ -67,8 +67,8 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "22665465259E35BC00297D3B"
-            BuildableName = "Emul8080r"
+            BlueprintIdentifier = "22B63D8325A39509008E785F"
+            BuildableName = "Emul8080r.app"
             BlueprintName = "Emul8080r"
             ReferencedContainer = "container:Emul8080r.xcodeproj">
          </BuildableReference>

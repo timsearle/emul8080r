@@ -43,7 +43,7 @@ public class CPU {
                 throw Disassembler.Error.unknownCode(String(format: "%02x", memory[Int(state.pc)]))
             }
 
-            try _ = disassembler.disassembleOpCode(from: data, offset: Int(state.pc))
+            try _ = disassembler.disassembleOpCode(offset: Int(state.pc))
 
             switch code {
             case .nop:

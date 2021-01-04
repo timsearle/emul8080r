@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:/Users/tim/Dev/Emulator/Emulat8080r/Emul8080r.xcodeproj">
+      location = "absolute:/Users/tim/Dev/Emulator/Emulat8080r/Emul8080r.xcodeproj">
    </FileRef>
 </Workspace>
