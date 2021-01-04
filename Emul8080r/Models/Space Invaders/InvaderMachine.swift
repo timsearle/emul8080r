@@ -8,8 +8,13 @@ public final class InvaderMachine {
 
     private let cpu: CPU
     private let shiftRegister = ShiftRegister()
+    private let videoController = ShiftRegister()
 
     private var inputPorts: [UInt8] = [0b00001110, 0b00001000, 0, 0]
+
+    public var videoMemory: [UInt8] {
+        Array(cpu.memory[0x2400...0x3FFF])
+    }
 
     public init(rom: Data) {
         cpu = CPU(memory: [UInt8](repeating: 0, count: 65536))

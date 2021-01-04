@@ -40,7 +40,6 @@ public struct State8080: CustomStringConvertible {
     var sp: Int = 0
     var pc: Int = 0
     var condition_bits = ConditionBits()
-    var memory = [UInt8](repeating: 0, count: 65536)
 
     var inte = UInt8(0) // Interrupts Enabled
 
@@ -48,7 +47,6 @@ public struct State8080: CustomStringConvertible {
         """
         \n
         -= 8080 Internal State =-
-        Memory Size: \(memory.count)
         Program Counter: \(pc)
         Stack Pointer: \(sp)
         \(condition_bits)
