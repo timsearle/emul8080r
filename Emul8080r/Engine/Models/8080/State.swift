@@ -43,6 +43,10 @@ public struct State8080: CustomStringConvertible {
 
     var inte = UInt8(1) // Interrupts Enabled
 
+    func updateConditionBits(_ byte: UInt8) {
+        print("NOT IMPLEMENTED")
+    }
+
     public var description: String {
         """
         \n

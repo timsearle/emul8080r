@@ -180,7 +180,9 @@ public class CPU {
             state.condition_bits.carry = 0
             updateConditionBits(Int(state.registers.a), state: &state)
         case .pop_b:
-            throw Error.unhandledOperation(code)
+            state.registers.b = memory[state.sp - 1]
+            state.registers.c = memory[state.sp - 2]
+            state.sp = state.sp + 2
         case .jnz:
             if state.condition_bits.zero == 0 {
                 state.pc = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
@@ -215,7 +217,9 @@ public class CPU {
             state.pc = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
             return code.cycleCount
         case .pop_d:
-            throw Error.unhandledOperation(code)
+            state.registers.d = memory[state.sp - 1]
+            state.registers.e = memory[state.sp - 2]
+            state.sp = state.sp + 2
         case .jnc:
             throw Error.unhandledOperation(code)
         case .out:
@@ -234,7 +238,9 @@ public class CPU {
             let device = memory[state.pc + 1]
             state.registers.a = machineIn?(device) ?? state.registers.a
         case .pop_h:
-            throw Error.unhandledOperation(code)
+            state.registers.h = memory[state.sp - 1]
+            state.registers.l = memory[state.sp - 2]
+            state.sp = state.sp + 2
         case .push_h:
             let h = state.registers.h
             let l = state.registers.l
@@ -244,7 +250,9 @@ public class CPU {
         case .xchg:
             throw Error.unhandledOperation(code)
         case .pop_psw:
-            throw Error.unhandledOperation(code)
+            state.registers.a = memory[state.sp - 1]
+            state.updateConditionBits(memory[state.sp - 2]) 
+            state.sp = state.sp + 2
         case .di:
             state.inte = 0x00
         case .push_psw:
