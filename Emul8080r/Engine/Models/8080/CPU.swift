@@ -89,7 +89,9 @@ public class CPU {
         case .mvi_c:
             state.registers.c = memory[state.pc + 1]
         case .rrc:
-            throw Error.unhandledOperation(code)
+            let accumulator = state.registers.a
+            state.registers.a = ((accumulator & 1) << 7) | accumulator >> 1
+            state.condition_bits.carry = state.registers.a & 0x01
         case .lxi_d_e:
             state.registers.e = memory[state.pc + 1]
             state.registers.d = memory[state.pc + 2]
@@ -211,7 +213,11 @@ public class CPU {
             state.sp = state.sp - 2
         case .adi:
             // impacts condition bits
-            throw Error.unhandledOperation(code)
+            let value = memory[state.pc + 1]
+            let result = (UInt16(state.registers.a) + UInt16(value)) & 0xff
+            state.registers.a = UInt8(result)
+            updateConditionBits(Int(state.registers.a), state: &state)
+            state.condition_bits.carry = UInt8(result > 0xff)
         case .ret:
             let low = memory[state.sp]
             let high = memory[state.sp + 1]

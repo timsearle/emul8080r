@@ -44,7 +44,12 @@ public struct State8080: CustomStringConvertible {
     var inte = UInt8(0) // Interrupts Enabled
 
     mutating func updateConditionBits(_ byte: UInt8) {
-        let bits = String(byte, radix: 2).map { UInt8("\($0)")! }
+        var bits = String(byte, radix: 2).map { UInt8("\($0)")! }
+
+        while bits.count < 8 {
+            bits.insert(0, at: 0)
+        }
+
         condition_bits.sign = bits[0]
         condition_bits.zero = bits[1]
         condition_bits.aux_carry = bits[3]
