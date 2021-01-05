@@ -27,7 +27,7 @@ struct Disassembler {
 
         var value = 1
 
-        print(code, terminator: " ")
+        print("\(String(offset, radix: 16)) \(code)", terminator: " ")
 
         var hex = ""
 

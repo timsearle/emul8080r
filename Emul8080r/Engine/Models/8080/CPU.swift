@@ -53,6 +53,9 @@ public class CPU {
     }
 
     public func execute() throws -> Int {
+        if state.pc == 0x076D {
+            print("")
+        }
         guard let code = OpCode(rawValue: memory[Int(state.pc)]) else {
             throw Disassembler.Error.unknownCode(String(format: "%02x", memory[Int(state.pc)]))
         }
@@ -64,25 +67,29 @@ public class CPU {
         switch code {
         case .nop:
             break
+        case .lxi_b_c:
+            throw Error.unhandledOperation(code)
         case .dcr_b:
             let (overflow, _) = state.registers.b.subtractingReportingOverflow(1)
             updateConditionBits(Int(overflow), state: &state)
             state.registers.b = overflow
-        case .dcr_d:
-            let (overflow, _) = state.registers.d.subtractingReportingOverflow(1)
-            updateConditionBits(Int(overflow), state: &state)
-            state.registers.d = overflow
         case .mvi_b:
-            state.registers.b = UInt8("\(memory[state.pc + 1].hex)", radix: 16)!
+            state.registers.b = memory[state.pc + 1]
         case .dad_b_c:
             let bc = UInt32(state.registers.b << 8 | state.registers.c)
             let hl = UInt32(state.registers.h << 8 | state.registers.l)
 
             let result = bc + hl
 
-            state.registers.h = UInt8((result >> 8) & 0xff)
+            state.registers.h = UInt8((result & 0xff00) >> 8)
             state.registers.l = UInt8(result & 0xff)
             state.condition_bits.carry = UInt8((result & 0xffff0000) > 0)
+        case .dcr_c:
+            let (overflow, _) = state.registers.c.subtractingReportingOverflow(1)
+            updateConditionBits(Int(overflow), state: &state)
+            state.registers.c = overflow
+        case .mvi_c:
+            state.registers.c = memory[state.pc + 1]
         case .rrc:
             throw Error.unhandledOperation(code)
         case .lxi_d_e:
@@ -94,12 +101,12 @@ public class CPU {
             state.registers.d = UInt8((value >> 8) & 0xff)
             state.registers.e = UInt8(value & 0xff)
         case .dad_d_e:
-            let bc = UInt32(state.registers.d << 8 | state.registers.e)
+            let de = UInt32(state.registers.d << 8 | state.registers.e)
             let hl = UInt32(state.registers.h << 8 | state.registers.l)
 
-            let result = bc + hl
+            let result = de + hl
 
-            state.registers.h = UInt8((result >> 8) & 0xff)
+            state.registers.h = UInt8((result & 0xff00) >> 8)
             state.registers.l = UInt8(result & 0xff)
             state.condition_bits.carry = UInt8((result & 0xffff0000) > 0)
         case .ldax_d_e:
@@ -117,9 +124,13 @@ public class CPU {
             state.registers.l = UInt8(value & 0xff)
         case .daa:
             throw Error.unhandledOperation(code)
+        case .mvi_h:
+            state.registers.h = memory[state.pc + 1]
         case .dad_h_l:
-            // double HL (multiply by 2, left shift one position)
-            throw Error.unhandledOperation(code)
+            let result = UInt32(state.registers.h << 8 | state.registers.l) * 2
+            state.registers.h = UInt8((result & 0xff00) >> 8)
+            state.registers.l = UInt8(result & 0xff)
+            state.condition_bits.carry = UInt8((result & 0xffff0000) > 0)
         case .dcx_h_l:
             throw Error.unhandledOperation(code)
         case .lxi_sp:
@@ -129,11 +140,13 @@ public class CPU {
             memory[address] = state.registers.a
         case .dcr_m:
             throw Error.unhandledOperation(code)
+        case .mvi_m:
+            throw Error.unhandledOperation(code)
         case .lda:
             let address = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
             state.registers.a = memory[address]
         case .mvi_a:
-            state.registers.a = UInt8("\(memory[state.pc + 1].hex)", radix: 16)!
+            state.registers.a = memory[state.pc + 1]
         case .mov_d_m:
             let offset = "\(state.registers.h.hex)\(state.registers.l.hex)"
             state.registers.d = memory[Int(offset, radix: 16)!]
@@ -180,8 +193,8 @@ public class CPU {
             state.condition_bits.carry = 0
             updateConditionBits(Int(state.registers.a), state: &state)
         case .pop_b:
-            state.registers.b = memory[state.sp - 1]
-            state.registers.c = memory[state.sp - 2]
+            state.registers.b = memory[state.sp + 1]
+            state.registers.c = memory[state.sp]
             state.sp = state.sp + 2
         case .jnz:
             if state.condition_bits.zero == 0 {
@@ -198,11 +211,12 @@ public class CPU {
             memory[state.sp - 2] = c
             state.sp = state.sp - 2
         case .adi:
+            // impacts condition bits
             throw Error.unhandledOperation(code)
         case .ret:
             let low = memory[state.sp]
             let high = memory[state.sp + 1]
-            state.sp = state.sp - 2
+            state.sp = state.sp + 2
             state.pc = Int("\(high.hex)\(low.hex)", radix: 16)!
         case .jz:
             if state.condition_bits.zero == 1 {
@@ -217,8 +231,8 @@ public class CPU {
             state.pc = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
             return code.cycleCount
         case .pop_d:
-            state.registers.d = memory[state.sp - 1]
-            state.registers.e = memory[state.sp - 2]
+            state.registers.d = memory[state.sp + 1]
+            state.registers.e = memory[state.sp]
             state.sp = state.sp + 2
         case .jnc:
             throw Error.unhandledOperation(code)
@@ -227,8 +241,8 @@ public class CPU {
             let port = memory[state.pc + 1]
             machineOut?(port, accumulator)
         case .push_d:
-            let d = state.registers.b
-            let e = state.registers.c
+            let d = state.registers.d
+            let e = state.registers.e
             memory[state.sp - 1] = d
             memory[state.sp - 2] = e
             state.sp = state.sp - 2
@@ -238,8 +252,8 @@ public class CPU {
             let device = memory[state.pc + 1]
             state.registers.a = machineIn?(device) ?? state.registers.a
         case .pop_h:
-            state.registers.h = memory[state.sp - 1]
-            state.registers.l = memory[state.sp - 2]
+            state.registers.h = memory[state.sp + 1]
+            state.registers.l = memory[state.sp]
             state.sp = state.sp + 2
         case .push_h:
             let h = state.registers.h
@@ -247,11 +261,15 @@ public class CPU {
             memory[state.sp - 1] = h
             memory[state.sp - 2] = l
             state.sp = state.sp - 2
+        case .ani:
+            state.registers.a = state.registers.a & memory[state.pc + 1]
+            state.condition_bits.carry = 0
+            updateConditionBits(Int(state.registers.a), state: &state)
         case .xchg:
             throw Error.unhandledOperation(code)
         case .pop_psw:
-            state.registers.a = memory[state.sp - 1]
-            state.updateConditionBits(memory[state.sp - 2]) 
+            state.registers.a = memory[state.sp + 1]
+            state.updateConditionBits(memory[state.sp])
             state.sp = state.sp + 2
         case .di:
             state.inte = 0x00
@@ -264,6 +282,7 @@ public class CPU {
         case .ei:
             state.inte = 0x01
         case .cpi:
+            // modifies z,s,p,cy,ac
             throw Error.unhandledOperation(code)
         }
 

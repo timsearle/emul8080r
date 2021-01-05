@@ -29,7 +29,7 @@ public final class InvaderMachine {
     public func play() throws {
         if lastExecutionTime == 0.0 {
             lastExecutionTime = Date().timeIntervalSince1970
-            nextInterrupt = lastExecutionTime + 0.16
+            nextInterrupt = lastExecutionTime + 0.016
             whichInterrupt = 1
         }
 
@@ -39,7 +39,7 @@ public final class InvaderMachine {
                 if now > self.nextInterrupt {
                     self.cpu.interrupt(self.whichInterrupt)
                     self.whichInterrupt = self.whichInterrupt == 1 ? 2 : 1
-                    self.nextInterrupt = now + 0.08
+                    self.nextInterrupt = now + 0.008
                 }
             })
         }
