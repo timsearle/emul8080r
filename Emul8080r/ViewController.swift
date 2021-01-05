@@ -11,7 +11,7 @@ class ViewController: UIViewController {
     @IBOutlet var imageView: UIImageView! {
         didSet {
             imageView.contentMode = .scaleAspectFit
-            imageView.backgroundColor = .black
+            imageView.backgroundColor = .red
             imageView.layer.magnificationFilter = .nearest
         }
     }

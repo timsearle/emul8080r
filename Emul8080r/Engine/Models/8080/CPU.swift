@@ -53,9 +53,6 @@ public class CPU {
     }
 
     public func execute() throws -> Int {
-        if state.pc == 0x076D {
-            print("")
-        }
         guard let code = OpCode(rawValue: memory[Int(state.pc)]) else {
             throw Disassembler.Error.unknownCode(String(format: "%02x", memory[Int(state.pc)]))
         }
@@ -68,7 +65,8 @@ public class CPU {
         case .nop:
             break
         case .lxi_b_c:
-            throw Error.unhandledOperation(code)
+            state.registers.c = memory[state.pc + 1]
+            state.registers.b = memory[state.pc + 2]
         case .dcr_b:
             let (overflow, _) = state.registers.b.subtractingReportingOverflow(1)
             updateConditionBits(Int(overflow), state: &state)
@@ -141,7 +139,8 @@ public class CPU {
         case .dcr_m:
             throw Error.unhandledOperation(code)
         case .mvi_m:
-            throw Error.unhandledOperation(code)
+            let address = Int(state.registers.h << 8 | state.registers.l)
+            memory[address] = memory[state.pc + 1]
         case .lda:
             let address = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
             state.registers.a = memory[address]
@@ -218,6 +217,7 @@ public class CPU {
             let high = memory[state.sp + 1]
             state.sp = state.sp + 2
             state.pc = Int("\(high.hex)\(low.hex)", radix: 16)!
+            return code.cycleCount
         case .jz:
             if state.condition_bits.zero == 1 {
                 state.pc = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
@@ -266,7 +266,15 @@ public class CPU {
             state.condition_bits.carry = 0
             updateConditionBits(Int(state.registers.a), state: &state)
         case .xchg:
-            throw Error.unhandledOperation(code)
+            let h = state.registers.h
+            let l = state.registers.l
+            let d = state.registers.d
+            let e = state.registers.e
+
+            state.registers.h = d
+            state.registers.l = e
+            state.registers.d = h
+            state.registers.e = l
         case .pop_psw:
             state.registers.a = memory[state.sp + 1]
             state.updateConditionBits(memory[state.sp])
@@ -282,8 +290,11 @@ public class CPU {
         case .ei:
             state.inte = 0x01
         case .cpi:
-            // modifies z,s,p,cy,ac
-            throw Error.unhandledOperation(code)
+            let accumulator = Int(state.registers.a)
+            let value = Int(memory[state.pc + 1])
+
+            state.condition_bits.carry = UInt8(accumulator < value)
+            updateConditionBits(accumulator - value, state: &state)
         }
 
         state.pc += code.size
