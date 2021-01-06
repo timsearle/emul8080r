@@ -25,6 +25,7 @@ enum OpCode: UInt8, CustomStringConvertible {
     case dcr_m = 0x35
     case mvi_m = 0x36
     case lda = 0x3a
+    case dcr_a = 0x3d
     case mvi_a = 0x3e
     case mov_d_m = 0x56
     case mov_e_m = 0x5e
@@ -35,6 +36,14 @@ enum OpCode: UInt8, CustomStringConvertible {
     case mov_a_e = 0x7b
     case mov_a_h = 0x7c
     case mov_a_m = 0x7e
+    case add_b = 0x80
+    case add_c = 0x81
+    case add_d = 0x82
+    case add_e = 0x83
+    case add_h = 0x84
+    case add_l = 0x85
+    case add_m = 0x86
+    case add_a = 0x87
     case ana_b = 0xa0
     case ana_c = 0xa1
     case ana_d = 0xa2
@@ -49,6 +58,7 @@ enum OpCode: UInt8, CustomStringConvertible {
     case jmp = 0xc3
     case push_b = 0xc5
     case adi = 0xc6
+    case rz = 0xc8
     case ret = 0xc9
     case jz = 0xca
     case call = 0xcd
@@ -94,7 +104,7 @@ enum OpCode: UInt8, CustomStringConvertible {
 
     var size: Int {
         switch self {
-        case .nop, .dcr_b, .dad_b_c, .dcr_c, .rrc, .inx_d_e, .dad_d_e, .ldax_d_e, .inx_h_l, .daa, .dad_h_l, .dcx_h_l, .dcr_m, .mov_d_m, .mov_e_m, .mov_h_m, .mov_l_a, .mov_m_a, .mov_a_d, .mov_a_e, .mov_a_h, .mov_a_m, .ana_b, .ana_c, .ana_d, .ana_e, .ana_h, .ana_l, .ana_m, .ana_a, .xra_a, .pop_b, .push_b, .ret, .pop_d, .push_d, .pop_h, .push_h, .xchg, .pop_psw, .di, .push_psw, .ei:
+        case .nop, .dcr_b, .dad_b_c, .dcr_c, .rrc, .inx_d_e, .dad_d_e, .ldax_d_e, .inx_h_l, .daa, .dcr_a, .dad_h_l, .dcx_h_l, .dcr_m, .mov_d_m, .mov_e_m, .mov_h_m, .mov_l_a, .mov_m_a, .mov_a_d, .mov_a_e, .mov_a_h, .mov_a_m, .add_b, .add_c, .add_d, .add_e, .add_h, .add_l, .add_m, .add_a, .ana_b, .ana_c, .ana_d, .ana_e, .ana_h, .ana_l, .ana_m, .ana_a, .xra_a, .pop_b, .push_b, .rz, .ret, .pop_d, .push_d, .pop_h, .push_h, .xchg, .pop_psw, .di, .push_psw, .ei:
             return 1
         case .mvi_b, .mvi_c, .mvi_h, .mvi_m, .mvi_a, .adi, .out, .in, .ani, .cpi:
             return 2
@@ -153,6 +163,8 @@ enum OpCode: UInt8, CustomStringConvertible {
             return "MVI M"
         case .lda:
             return "LDA"
+        case .dcr_a:
+            return "DCR A"
         case .mvi_a:
             return "MVI A,#"
         case .mov_d_m:
@@ -173,6 +185,22 @@ enum OpCode: UInt8, CustomStringConvertible {
             return "MOV A, H"
         case .mov_a_m:
             return "MOV A, M"
+        case .add_b:
+            return "ADD B"
+        case .add_c:
+            return "ADD C"
+        case .add_d:
+            return "ADD D"
+        case .add_e:
+            return "ADD E"
+        case .add_h:
+            return "ADD H"
+        case .add_l:
+            return "ADD L"
+        case .add_m:
+            return "ADD M"
+        case .add_a:
+            return "ADD A"
         case .ana_b:
             return "ANA B"
         case .ana_c:
@@ -199,6 +227,8 @@ enum OpCode: UInt8, CustomStringConvertible {
             return "JMP"
         case .adi:
             return "ADI #"
+        case .rz:
+            return "RET Z"
         case .ret:
             return "RET"
         case .jz:

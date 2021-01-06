@@ -37,7 +37,7 @@ public final class InvaderMachine {
             self.lastExecutionTime = try! self.cpu.start(previousExecutionTime: self.lastExecutionTime, interruptProvider: {
                 let now = Date().timeIntervalSince1970
                 if now > self.nextInterrupt {
-                    self.cpu.interrupt(self.whichInterrupt)
+                    try! self.cpu.interrupt(self.whichInterrupt)
                     self.whichInterrupt = self.whichInterrupt == 1 ? 2 : 1
                     self.nextInterrupt = now + 0.008
                 }
