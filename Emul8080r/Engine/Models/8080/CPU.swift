@@ -164,35 +164,146 @@ public class CPU {
             state.registers.a = overflow
         case .mvi_a:
             state.registers.a = memory[state.pc + 1]
+        case .mov_b_b:
+            break
+        case .mov_b_c:
+            state.registers.b = state.registers.c
+        case .mov_b_d:
+            state.registers.b = state.registers.d
+        case .mov_b_e:
+            state.registers.b = state.registers.e
+        case .mov_b_h:
+            state.registers.b = state.registers.h
+        case .mov_b_l:
+            state.registers.b = state.registers.l
+        case .mov_b_m:
+            let offset = "\(state.registers.h.hex)\(state.registers.l.hex)"
+            state.registers.b = memory[Int(offset, radix: 16)!]
+        case .mov_b_a:
+            state.registers.b = state.registers.a
+        case .mov_c_b:
+            state.registers.c = state.registers.b
+        case .mov_c_c:
+            break
+        case .mov_c_d:
+            state.registers.c = state.registers.d
+        case .mov_c_e:
+            state.registers.c = state.registers.e
+        case .mov_c_h:
+            state.registers.c = state.registers.h
+        case .mov_c_l:
+            state.registers.c = state.registers.l
+        case .mov_c_m:
+            let offset = "\(state.registers.h.hex)\(state.registers.l.hex)"
+            state.registers.c = memory[Int(offset, radix: 16)!]
+        case .mov_c_a:
+            state.registers.c = state.registers.a
+        case .mov_d_b:
+            state.registers.d = state.registers.b
+        case .mov_d_c:
+            state.registers.d = state.registers.c
+        case .mov_d_d:
+            break
+        case .mov_d_e:
+            state.registers.d = state.registers.e
+        case .mov_d_h:
+            state.registers.d = state.registers.h
+        case .mov_d_l:
+            state.registers.d = state.registers.l
         case .mov_d_m:
             let offset = "\(state.registers.h.hex)\(state.registers.l.hex)"
             state.registers.d = memory[Int(offset, radix: 16)!]
         case .mov_d_a:
             state.registers.d = state.registers.a
+        case .mov_e_b:
+            state.registers.e = state.registers.b
+        case .mov_e_c:
+            state.registers.e = state.registers.c
+        case .mov_e_d:
+            state.registers.e = state.registers.d
+        case .mov_e_e:
+            break
+        case .mov_e_h:
+            state.registers.e = state.registers.h
+        case .mov_e_l:
+            state.registers.e = state.registers.l
         case .mov_e_m:
             let offset = "\(state.registers.h.hex)\(state.registers.l.hex)"
             state.registers.e = memory[Int(offset, radix: 16)!]
         case .mov_e_a:
             state.registers.e = state.registers.a
+        case .mov_h_b:
+            state.registers.h = state.registers.b
+        case .mov_h_c:
+            state.registers.h = state.registers.c
+        case .mov_h_d:
+            state.registers.h = state.registers.d
+        case .mov_h_e:
+            state.registers.h = state.registers.e
+        case .mov_h_h:
+            break
+        case .mov_h_l:
+            state.registers.h = state.registers.l
         case .mov_h_m:
             let offset = "\(state.registers.h.hex)\(state.registers.l.hex)"
             state.registers.h = memory[Int(offset, radix: 16)!]
         case .mov_h_a:
             state.registers.h = state.registers.a
+        case .mov_l_b:
+            state.registers.l = state.registers.b
+        case .mov_l_c:
+            state.registers.l = state.registers.c
+        case .mov_l_d:
+            state.registers.l = state.registers.d
+        case .mov_l_e:
+            state.registers.l = state.registers.e
+        case .mov_l_h:
+            state.registers.l = state.registers.h
+        case .mov_l_l:
+            break
+        case .mov_l_m:
+            let offset = "\(state.registers.h.hex)\(state.registers.l.hex)"
+            state.registers.l = memory[Int(offset, radix: 16)!]
         case .mov_l_a:
             state.registers.l = state.registers.a
+        case .mov_m_b:
+            let offset = Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)!
+            try write(state.registers.b, at: offset)
+        case .mov_m_c:
+            let offset = Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)!
+            try write(state.registers.c, at: offset)
+        case .mov_m_d:
+            let offset = Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)!
+            try write(state.registers.d, at: offset)
+        case .mov_m_e:
+            let offset = Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)!
+            try write(state.registers.e, at: offset)
+        case .mov_m_h:
+            let offset = Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)!
+            try write(state.registers.h, at: offset)
+        case .mov_m_l:
+            let offset = Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)!
+            try write(state.registers.l, at: offset)
         case .mov_m_a:
             let offset = Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)!
             try write(state.registers.a, at: offset)
+        case .mov_a_b:
+            state.registers.a = state.registers.b
+        case .mov_a_c:
+            state.registers.a = state.registers.c
         case .mov_a_d:
             state.registers.a = state.registers.d
         case .mov_a_e:
             state.registers.a = state.registers.e
         case .mov_a_h:
             state.registers.a = state.registers.h
+        case .mov_a_l:
+            state.registers.a = state.registers.l
         case .mov_a_m:
             let offset = "\(state.registers.h.hex)\(state.registers.l.hex)"
             state.registers.a = memory[Int(offset, radix: 16)!]
+        case .mov_a_a:
+            break
         case .add_b:
             let result = UInt16(state.registers.a + state.registers.b)
             state.registers.a = UInt8(result & 0xff)

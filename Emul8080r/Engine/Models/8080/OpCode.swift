@@ -30,18 +30,79 @@ enum OpCode: UInt8, CustomStringConvertible {
     case lda = 0x3a
     case dcr_a = 0x3d
     case mvi_a = 0x3e
+
+    case mov_b_b = 0x40
+    case mov_b_c = 0x41
+    case mov_b_d = 0x42
+    case mov_b_e = 0x43
+    case mov_b_h = 0x44
+    case mov_b_l = 0x45
+    case mov_b_m = 0x46
+    case mov_b_a = 0x47
+
+    case mov_c_b = 0x48
+    case mov_c_c = 0x49
+    case mov_c_d = 0x4a
+    case mov_c_e = 0x4b
+    case mov_c_h = 0x4c
+    case mov_c_l = 0x4d
+    case mov_c_m = 0x4e
+    case mov_c_a = 0x4f
+
+    case mov_d_b = 0x50
+    case mov_d_c = 0x51
+    case mov_d_d = 0x52
+    case mov_d_e = 0x53
+    case mov_d_h = 0x54
+    case mov_d_l = 0x55
     case mov_d_m = 0x56
     case mov_d_a = 0x57
+
+    case mov_e_b = 0x58
+    case mov_e_c = 0x59
+    case mov_e_d = 0x5a
+    case mov_e_e = 0x5b
+    case mov_e_h = 0x5c
+    case mov_e_l = 0x5d
     case mov_e_m = 0x5e
     case mov_e_a = 0x5f
+
+    case mov_h_b = 0x60
+    case mov_h_c = 0x61
+    case mov_h_d = 0x62
+    case mov_h_e = 0x63
+    case mov_h_h = 0x64
+    case mov_h_l = 0x65
     case mov_h_m = 0x66
     case mov_h_a = 0x67
+
+    case mov_l_b = 0x68
+    case mov_l_c = 0x69
+    case mov_l_d = 0x6a
+    case mov_l_e = 0x6b
+    case mov_l_h = 0x6c
+    case mov_l_l = 0x6d
+    case mov_l_m = 0x6e
     case mov_l_a = 0x6f
+
+    case mov_m_b = 0x70
+    case mov_m_c = 0x71
+    case mov_m_d = 0x72
+    case mov_m_e = 0x73
+    case mov_m_h = 0x74
+    case mov_m_l = 0x75
+
     case mov_m_a = 0x77
+
+    case mov_a_b = 0x78
+    case mov_a_c = 0x79
     case mov_a_d = 0x7a
     case mov_a_e = 0x7b
     case mov_a_h = 0x7c
+    case mov_a_l = 0x7d
     case mov_a_m = 0x7e
+    case mov_a_a = 0x7f
+
     case add_b = 0x80
     case add_c = 0x81
     case add_d = 0x82
@@ -111,7 +172,7 @@ enum OpCode: UInt8, CustomStringConvertible {
 
     var size: Int {
         switch self {
-        case .nop, .inx_b_c, .dcr_b, .dad_b_c, .ldax_b_c, .dcr_c, .rrc, .inx_d_e, .dad_d_e, .ldax_d_e, .inx_h_l, .daa, .dcr_a, .dad_h_l, .dcx_h_l, .dcr_m, .mov_d_a, .mov_e_a, .mov_h_a, .mov_d_m, .mov_e_m, .stc, .mov_h_m, .mov_l_a, .mov_m_a, .mov_a_d, .mov_a_e, .mov_a_h, .mov_a_m, .add_b, .add_c, .add_d, .add_e, .add_h, .add_l, .add_m, .add_a, .ana_b, .ana_c, .ana_d, .ana_e, .ana_h, .ana_l, .ana_m, .ana_a, .xra_a, .pop_b, .push_b, .rz, .ret, .pop_d, .push_d, .ret_c, .pop_h, .push_h, .xchg, .pop_psw, .di, .push_psw, .ei:
+        case .nop, .inx_b_c, .dcr_b, .dad_b_c, .ldax_b_c, .dcr_c, .rrc, .inx_d_e, .dad_d_e, .ldax_d_e, .inx_h_l, .daa, .dcr_a, .dad_h_l, .dcx_h_l, .dcr_m, .stc, .mov_b_b, .mov_b_c, .mov_b_d, .mov_b_e, .mov_b_h, .mov_b_l, .mov_b_m, .mov_b_a, .mov_c_b, .mov_c_c, .mov_c_d, .mov_c_e, .mov_c_h, .mov_c_l, .mov_c_m, .mov_c_a, .mov_d_b, .mov_d_c, .mov_d_d, .mov_d_e, .mov_d_h, .mov_d_l, .mov_d_m, .mov_d_a, .mov_e_b, .mov_e_c, .mov_e_d, .mov_e_e, .mov_e_h, .mov_e_l, .mov_e_m, .mov_e_a, .mov_h_b, .mov_h_c, .mov_h_d, .mov_h_e, .mov_h_h, .mov_h_l, .mov_h_m, .mov_h_a, .mov_l_b, .mov_l_c, .mov_l_d, .mov_l_e, .mov_l_h, .mov_l_l, .mov_l_m, .mov_l_a, .mov_m_b, .mov_m_c, .mov_m_d, .mov_m_e, .mov_m_h, .mov_m_l, .mov_m_a, .mov_a_b, .mov_a_c, .mov_a_d, .mov_a_e, .mov_a_h, .mov_a_l, .mov_a_m, .mov_a_a, .add_b, .add_c, .add_d, .add_e, .add_h, .add_l, .add_m, .add_a, .ana_b, .ana_c, .ana_d, .ana_e, .ana_h, .ana_l, .ana_m, .ana_a, .xra_a, .pop_b, .push_b, .rz, .ret, .pop_d, .push_d, .ret_c, .pop_h, .push_h, .xchg, .pop_psw, .di, .push_psw, .ei:
             return 1
         case .mvi_b, .mvi_c, .mvi_h, .mvi_m, .mvi_a, .adi, .out, .in, .ani, .cpi:
             return 2
@@ -180,30 +241,132 @@ enum OpCode: UInt8, CustomStringConvertible {
             return "DCR A"
         case .mvi_a:
             return "MVI A,#"
+        case .mov_b_b:
+            return "MOV B, B"
+        case .mov_b_c:
+            return "MOV B, C"
+        case .mov_b_d:
+            return "MOV B, D"
+        case .mov_b_e:
+            return "MOV B, E"
+        case .mov_b_h:
+            return "MOV B, H"
+        case .mov_b_l:
+            return "MOV B, L"
+        case .mov_b_m:
+            return "MOV B, M"
+        case .mov_b_a:
+            return "MOV B, A"
+        case .mov_c_b:
+            return "MOV C, B"
+        case .mov_c_c:
+            return "MOV C, C"
+        case .mov_c_d:
+            return "MOV C, D"
+        case .mov_c_e:
+            return "MOV C, E"
+        case .mov_c_h:
+            return "MOV C, H"
+        case .mov_c_l:
+            return "MOV C, L"
+        case .mov_c_m:
+            return "MOV C, M"
+        case .mov_c_a:
+            return "MOV C, A"
+        case .mov_d_b:
+            return "MOV D, B"
+        case .mov_d_c:
+            return "MOV D, C"
+        case .mov_d_d:
+            return "MOV D, D"
+        case .mov_d_e:
+            return "MOV D, E"
+        case .mov_d_h:
+            return "MOV D, H"
+        case .mov_d_l:
+            return "MOV D, L"
         case .mov_d_m:
             return "MOV D, M"
         case .mov_d_a:
             return "MOV D, A"
-        case .mov_h_a:
-            return "MOV H, A"
-        case .mov_e_a:
-            return "MOV W, A"
+        case .mov_e_b:
+            return "MOV E, B"
+        case .mov_e_c:
+            return "MOV E, C"
+        case .mov_e_d:
+            return "MOV E, D"
+        case .mov_e_e:
+            return "MOV E, E"
+        case .mov_e_h:
+            return "MOV E, H"
+        case .mov_e_l:
+            return "MOV E, L"
         case .mov_e_m:
             return "MOV E, M"
+        case .mov_e_a:
+            return "MOV E, A"
+        case .mov_h_b:
+            return "MOV H, B"
+        case .mov_h_c:
+            return "MOV H, C"
+        case .mov_h_d:
+            return "MOV H, D"
+        case .mov_h_e:
+            return "MOV H, E"
+        case .mov_h_h:
+            return "MOV H, H"
+        case .mov_h_l:
+            return "MOV H, L"
         case .mov_h_m:
             return "MOV H, M"
+        case .mov_h_a:
+            return "MOV H, A"
+        case .mov_l_b:
+            return "MOV L, B"
+        case .mov_l_c:
+            return "MOV L, C"
+        case .mov_l_d:
+            return "MOV L, D"
+        case .mov_l_e:
+            return "MOV L, E"
+        case .mov_l_h:
+            return "MOV L, H"
+        case .mov_l_l:
+            return "MOV L, L"
+        case .mov_l_m:
+            return "MOV L, M"
         case .mov_l_a:
             return "MOV L, A"
+        case .mov_m_b:
+            return "MOV M, B"
+        case .mov_m_c:
+            return "MOV M, C"
+        case .mov_m_d:
+            return "MOV M, D"
+        case .mov_m_e:
+            return "MOV M, E"
+        case .mov_m_h:
+            return "MOV M, H"
+        case .mov_m_l:
+            return "MOV M, L"
         case .mov_m_a:
             return "MOV M, A"
+        case .mov_a_b:
+            return "MOV A, B"
+        case .mov_a_c:
+            return "MOV A, C"
         case .mov_a_d:
             return "MOV A, D"
         case .mov_a_e:
             return "MOV A, E"
         case .mov_a_h:
             return "MOV A, H"
+        case .mov_a_l:
+            return "MOV A, L"
         case .mov_a_m:
             return "MOV A, M"
+        case .mov_a_a:
+            return "MOV A, A"
         case .add_b:
             return "ADD B"
         case .add_c:
