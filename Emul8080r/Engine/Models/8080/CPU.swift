@@ -66,6 +66,11 @@ public class CPU {
         case .lxi_b_c:
             state.registers.c = memory[state.pc + 1]
             state.registers.b = memory[state.pc + 2]
+        case .inx_b_c:
+            var value = Int("\(state.registers.b.hex)\(state.registers.c.hex)", radix: 16)!
+            value += 1
+            state.registers.b = UInt8((value >> 8) & 0xff)
+            state.registers.c = UInt8(value & 0xff)
         case .dcr_b:
             let (overflow, _) = state.registers.b.subtractingReportingOverflow(1)
             updateConditionBits(Int(overflow), state: &state)
@@ -162,12 +167,18 @@ public class CPU {
         case .mov_d_m:
             let offset = "\(state.registers.h.hex)\(state.registers.l.hex)"
             state.registers.d = memory[Int(offset, radix: 16)!]
+        case .mov_d_a:
+            state.registers.d = state.registers.a
         case .mov_e_m:
             let offset = "\(state.registers.h.hex)\(state.registers.l.hex)"
             state.registers.e = memory[Int(offset, radix: 16)!]
+        case .mov_e_a:
+            state.registers.e = state.registers.a
         case .mov_h_m:
             let offset = "\(state.registers.h.hex)\(state.registers.l.hex)"
             state.registers.h = memory[Int(offset, radix: 16)!]
+        case .mov_h_a:
+            state.registers.h = state.registers.a
         case .mov_l_a:
             state.registers.l = state.registers.a
         case .mov_m_a:
@@ -298,6 +309,12 @@ public class CPU {
             machineOut?(port, accumulator)
         case .push_d:
             try push(high: state.registers.d, low: state.registers.e)
+        case .ret_c:
+            if state.condition_bits.carry == 1 {
+                let (high, low) = try pop()
+                state.pc = Int("\(high.hex)\(low.hex)", radix: 16)!
+                return code.cycleCount
+            }
         case .jc:
             if state.condition_bits.carry == 1 {
                 state.pc = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
