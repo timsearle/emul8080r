@@ -1,6 +1,6 @@
 import Foundation
 
-public struct ConditionBits {
+public struct ConditionBits: Codable {
     var zero: UInt8 = 0
     var sign: UInt8 = 0
     var parity: UInt8 = 0
@@ -12,7 +12,7 @@ public struct ConditionBits {
     }
 }
 
-public struct Registers: CustomStringConvertible {
+public struct Registers: CustomStringConvertible, Codable {
     var a: UInt8 = 0
     var b: UInt8 = 0
     var c: UInt8 = 0
@@ -34,7 +34,7 @@ public struct Registers: CustomStringConvertible {
     }
 }
 
-public struct State8080: CustomStringConvertible {
+public struct State8080: CustomStringConvertible, Codable {
     var registers = Registers()
 
     var sp: Int = 0
@@ -42,6 +42,8 @@ public struct State8080: CustomStringConvertible {
     var condition_bits = ConditionBits()
 
     var inte = UInt8(0) // Interrupts Enabled
+
+    public init() {}
 
     mutating func updateConditionBits(_ byte: UInt8) {
         var bits = String(byte, radix: 2).map { UInt8("\($0)")! }

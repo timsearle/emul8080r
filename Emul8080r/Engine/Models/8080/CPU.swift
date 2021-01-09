@@ -9,14 +9,15 @@ public class CPU {
     var machineIn: ((_ port: UInt8) -> UInt8)?
     var machineOut: ((_ port: UInt8, _ accumulator: UInt8) -> Void)?
 
-    private var state = State8080()
+    var state: State8080
     private var disassembler: Disassembler!
     private let loggingEnabled: Bool
 
     var memory: [UInt8]
 
-    public init(memory: [UInt8], loggingEnabled: Bool = false) {
+    public init(memory: [UInt8], state: State8080 = State8080(), loggingEnabled: Bool = false) {
         self.memory = memory
+        self.state = state
         self.loggingEnabled = loggingEnabled
     }
 

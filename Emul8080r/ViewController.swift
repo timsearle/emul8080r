@@ -17,10 +17,18 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view.
 
         let romPath = CommandLine.arguments[1]
+        let enableCaching = CommandLine.arguments.last ?? "No"
         let data = try! Data(contentsOf: URL(fileURLWithPath: romPath))
 
-        self.spaceInvaders = InvaderMachine(rom: data, loggingEnabled: true)
-        try! self.spaceInvaders.play()
+        if enableCaching == "EnableCaching",
+           let data = UserDefaults.standard.data(forKey: "PreviousState"),
+           let saveState = try? JSONDecoder().decode(SaveState.self, from: data) {
+            self.spaceInvaders = InvaderMachine(saveState: saveState, loggingEnabled: true)
+            self.spaceInvaders.play()
+        } else {
+            self.spaceInvaders = InvaderMachine(rom: data, loggingEnabled: true)
+            self.spaceInvaders.play()
+        }
 
         CADisplayLink(target: self, selector: #selector(self.loadVideo)).add(to: .main, forMode: .common)
     }
@@ -62,8 +70,20 @@ class ViewController: UIViewController {
         spaceInvaders.fire(state: .up)
     }
 
-    @IBAction func coin(_ sender: Any) {
-        spaceInvaders.coin()
+    @IBAction func coinDown(_ sender: Any) {
+        spaceInvaders.coin(state: .down)
+    }
+
+    @IBAction func coinUp(_ sender: Any) {
+        spaceInvaders.coin(state: .up)
+    }
+
+    @IBAction func playerOneDown(_ sender: Any) {
+        spaceInvaders.start1P(state: .down)
+    }
+
+    @IBAction func playerOneUp(_ sender: Any) {
+        spaceInvaders.start1P(state: .up)
     }
 }
 

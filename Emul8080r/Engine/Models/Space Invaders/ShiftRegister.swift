@@ -29,7 +29,7 @@ import Foundation
      Reading from port 3 returns said result.
  */
 
-public final class ShiftRegister {
+public final class ShiftRegister: Codable {
     var shiftX = UInt8(0)
     var shiftY = UInt8(0)
     var shift_offset = UInt8(0)

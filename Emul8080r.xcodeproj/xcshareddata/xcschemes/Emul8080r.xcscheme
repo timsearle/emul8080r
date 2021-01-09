@@ -55,6 +55,10 @@
             argument = "/Users/tim/Dev/Emulator/Emul8080r/Emul8080r/invaders.rom"
             isEnabled = "YES">
          </CommandLineArgument>
+         <CommandLineArgument
+            argument = "EnableCaching"
+            isEnabled = "YES">
+         </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>
    <ProfileAction

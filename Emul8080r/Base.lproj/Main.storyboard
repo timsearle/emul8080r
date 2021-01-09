@@ -57,12 +57,17 @@
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fDf-4S-MsG">
                                         <rect key="frame" x="0.0" y="0.0" width="138" height="30"/>
                                         <state key="normal" title="1P Start"/>
+                                        <connections>
+                                            <action selector="playerOneDown:" destination="BYZ-38-t0r" eventType="touchDown" id="KDs-9k-e4d"/>
+                                            <action selector="playerOneUp:" destination="BYZ-38-t0r" eventType="touchUpInside" id="jXA-sF-4sI"/>
+                                        </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3UM-CZ-kgP">
                                         <rect key="frame" x="138" y="0.0" width="138" height="30"/>
                                         <state key="normal" title="Insert Coin"/>
                                         <connections>
-                                            <action selector="coin:" destination="BYZ-38-t0r" eventType="touchUpInside" id="8ap-xJ-Ard"/>
+                                            <action selector="coinDown:" destination="BYZ-38-t0r" eventType="touchDown" id="bCk-iY-2s7"/>
+                                            <action selector="coinUp:" destination="BYZ-38-t0r" eventType="touchUpInside" id="cAb-s3-HfS"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iKV-RG-fCK">
