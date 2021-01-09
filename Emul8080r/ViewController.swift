@@ -1,10 +1,3 @@
-//
-//  ViewController.swift
-//  Emul8080r
-//
-//  Created by Tim on 04/01/2021.
-//
-
 import UIKit
 
 class ViewController: UIViewController {
@@ -13,6 +6,7 @@ class ViewController: UIViewController {
             imageView.contentMode = .scaleAspectFit
             imageView.backgroundColor = .red
             imageView.layer.magnificationFilter = .nearest
+            imageView.transform = CGAffineTransform(rotationAngle: 3 * .pi/2)
         }
     }
 
@@ -25,16 +19,17 @@ class ViewController: UIViewController {
         let romPath = CommandLine.arguments[1]
         let data = try! Data(contentsOf: URL(fileURLWithPath: romPath))
 
-        spaceInvaders = InvaderMachine(rom: data, loggingEnabled: true)
+        spaceInvaders = InvaderMachine(rom: data, loggingEnabled: false)
 
-        CADisplayLink(target: self, selector: #selector(self.loadVideo)).add(to: .main, forMode: .default)
+        CADisplayLink(target: self, selector: #selector(self.loadVideo)).add(to: .main, forMode: .common)
         
         try! self.spaceInvaders.play()
     }
 
     @objc func loadVideo() {
-        let copy = Bitmap(width: 256, pixels: spaceInvaders.videoMemory.map { $0 == 0 ? 0x00 : 0xff })
-        imageView.image = UIImage(bitmap: copy)
+        let copy = spaceInvaders.videoMemory.map { $0.bits }.flatMap { $0 }
+        let bitmap = Bitmap(width: 256, pixels: copy.map { $0 == .zero ? 0x00 : 0xff })
+        imageView.image = UIImage(bitmap: bitmap)
     }
 }
 
