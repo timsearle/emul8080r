@@ -11,7 +11,7 @@ class ViewController: UIViewController {
     }
 
     private var spaceInvaders: InvaderMachine!
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -19,17 +19,51 @@ class ViewController: UIViewController {
         let romPath = CommandLine.arguments[1]
         let data = try! Data(contentsOf: URL(fileURLWithPath: romPath))
 
-        spaceInvaders = InvaderMachine(rom: data, loggingEnabled: false)
+        self.spaceInvaders = InvaderMachine(rom: data, loggingEnabled: true)
+        try! self.spaceInvaders.play()
 
         CADisplayLink(target: self, selector: #selector(self.loadVideo)).add(to: .main, forMode: .common)
-        
-        try! self.spaceInvaders.play()
     }
 
     @objc func loadVideo() {
-        let copy = spaceInvaders.videoMemory.map { $0.bits }.flatMap { $0 }
-        let bitmap = Bitmap(width: 256, pixels: copy.map { $0 == .zero ? 0x00 : 0xff })
+        let copy = spaceInvaders.videoMemory
+        var bits = [UInt8]()
+
+        for byte in copy {
+            bits.append(contentsOf: byte.bits)
+        }
+
+        let bitmap = Bitmap(width: 256, pixels: bits)
         imageView.image = UIImage(bitmap: bitmap)
+    }
+
+    //MARK: Machine controls
+    @IBAction func leftDown(_ sender: Any) {
+        spaceInvaders.fire(state: .down)
+    }
+
+    @IBAction func leftUp(_ sender: Any) {
+        spaceInvaders.fire(state: .up)
+    }
+
+    @IBAction func rightDown(_ sender: Any) {
+        spaceInvaders.right(state: .down)
+    }
+
+    @IBAction func rightUp(_ sender: Any) {
+        spaceInvaders.right(state: .up)
+    }
+
+    @IBAction func fireDown(_ sender: Any) {
+        spaceInvaders.fire(state: .down)
+    }
+
+    @IBAction func fireUp(_ sender: Any) {
+        spaceInvaders.fire(state: .up)
+    }
+
+    @IBAction func coin(_ sender: Any) {
+        spaceInvaders.coin()
     }
 }
 

@@ -14,7 +14,7 @@ public final class InvaderMachine {
     private var whichInterrupt: Int = 0
 
     private var inputPorts: [UInt8] = [0b00001110, 0b00001000, 0, 0]
-
+    
     public var videoMemory: [UInt8] {
         Array(cpu.memory[0x2400...0x3FFF])
     }
@@ -72,13 +72,20 @@ public final class InvaderMachine {
         }
     }
 
+    public func coin() {
+        inputPorts[1] |= 0x01
+    }
+
+    public func start1P() {
+        inputPorts[1] |= 0x04
+    }
+
     private func machineIn(_ port: UInt8) -> UInt8 {
         switch port {
         case 3:
             return shiftRegister.in(port: port)
         default:
-            print("Unimplemented IN port \(port)")
-            return 0
+            return inputPorts[Int(port)]
         }
     }
 
@@ -87,7 +94,7 @@ public final class InvaderMachine {
         case 2, 4:
             return shiftRegister.out(port: port, value: value)
         default:
-            print("Unimplemented OUT port \(port)")
+            break //print("Unimplemented OUT port \(port)")
         }
     }
 }

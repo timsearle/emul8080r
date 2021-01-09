@@ -5,13 +5,13 @@ extension UInt8 {
         String(format: "%02x", self)
     }
 
-    var bits: [Bit] {
+    var bits: [UInt8] {
         var byte = self
-        var bits = [Bit](repeating: .zero, count: 8)
+        var bits = [UInt8](repeating: 0x00, count: 8)
         for i in 0..<8 {
             let currentBit = byte & 0x01
             if currentBit != 0 {
-                bits[i] = .one
+                bits[i] = 0xff
             }
 
             byte >>= 1
@@ -23,9 +23,4 @@ extension UInt8 {
     init(_ value: Bool) {
         self = value ? 1 : 0
     }
-}
-
-enum Bit {
-    case one
-    case zero
 }

@@ -6,6 +6,7 @@ enum OpCode: UInt8, CustomStringConvertible {
     case dcr_b = 0x05
     case mvi_b = 0x06
     case dad_b_c = 0x09
+    case ldax_b_c = 0x0a
     case dcr_c = 0x0d
     case mvi_c = 0x0e
     case rrc = 0x0f
@@ -24,6 +25,7 @@ enum OpCode: UInt8, CustomStringConvertible {
     case sta = 0x32
     case dcr_m = 0x35
     case mvi_m = 0x36
+    case stc = 0x37
     case lda = 0x3a
     case dcr_a = 0x3d
     case mvi_a = 0x3e
@@ -104,7 +106,7 @@ enum OpCode: UInt8, CustomStringConvertible {
 
     var size: Int {
         switch self {
-        case .nop, .dcr_b, .dad_b_c, .dcr_c, .rrc, .inx_d_e, .dad_d_e, .ldax_d_e, .inx_h_l, .daa, .dcr_a, .dad_h_l, .dcx_h_l, .dcr_m, .mov_d_m, .mov_e_m, .mov_h_m, .mov_l_a, .mov_m_a, .mov_a_d, .mov_a_e, .mov_a_h, .mov_a_m, .add_b, .add_c, .add_d, .add_e, .add_h, .add_l, .add_m, .add_a, .ana_b, .ana_c, .ana_d, .ana_e, .ana_h, .ana_l, .ana_m, .ana_a, .xra_a, .pop_b, .push_b, .rz, .ret, .pop_d, .push_d, .pop_h, .push_h, .xchg, .pop_psw, .di, .push_psw, .ei:
+        case .nop, .dcr_b, .dad_b_c, .ldax_b_c, .dcr_c, .rrc, .inx_d_e, .dad_d_e, .ldax_d_e, .inx_h_l, .daa, .dcr_a, .dad_h_l, .dcx_h_l, .dcr_m, .mov_d_m, .mov_e_m, .stc, .mov_h_m, .mov_l_a, .mov_m_a, .mov_a_d, .mov_a_e, .mov_a_h, .mov_a_m, .add_b, .add_c, .add_d, .add_e, .add_h, .add_l, .add_m, .add_a, .ana_b, .ana_c, .ana_d, .ana_e, .ana_h, .ana_l, .ana_m, .ana_a, .xra_a, .pop_b, .push_b, .rz, .ret, .pop_d, .push_d, .pop_h, .push_h, .xchg, .pop_psw, .di, .push_psw, .ei:
             return 1
         case .mvi_b, .mvi_c, .mvi_h, .mvi_m, .mvi_a, .adi, .out, .in, .ani, .cpi:
             return 2
@@ -129,6 +131,8 @@ enum OpCode: UInt8, CustomStringConvertible {
             return "MVI C,#"
         case .dad_b_c:
             return "DAD B C"
+        case .ldax_b_c:
+            return "LDAX B C"
         case .rrc:
             return "RRC"
         case .lxi_d_e:
@@ -161,6 +165,8 @@ enum OpCode: UInt8, CustomStringConvertible {
             return "DCR M"
         case .mvi_m:
             return "MVI M"
+        case .stc:
+            return "STC"
         case .lda:
             return "LDA"
         case .dcr_a:

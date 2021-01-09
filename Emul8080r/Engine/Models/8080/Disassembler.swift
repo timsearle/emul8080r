@@ -22,12 +22,14 @@ struct Disassembler {
 
     func disassembleOpCode(offset: Int) throws -> Int {
         guard let code = OpCode(rawValue: data[offset]) else {
-            throw Error.unknownCode(String(format: "%02x", data[offset]))
+            throw Error.unknownCode(String(format: "%02x %02x", offset, data[offset]))
         }
 
         var value = 1
 
-        print("\(String(offset, radix: 16)) \(code)", terminator: " ")
+        DispatchQueue.main.async {
+            print("\(String(offset, radix: 16)) \(code)", terminator: " ")
+        }
 
         var hex = ""
 
@@ -39,8 +41,10 @@ struct Disassembler {
         if !hex.isEmpty {
             hex.insert(contentsOf: "0x", at: hex.startIndex)
         }
-
-        print(hex)
+        
+        DispatchQueue.main.async {
+            print(hex)
+        }
 
         return code.size
     }

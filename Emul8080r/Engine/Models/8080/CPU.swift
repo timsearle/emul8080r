@@ -81,6 +81,9 @@ public class CPU {
             state.registers.h = UInt8((result & 0xff00) >> 8)
             state.registers.l = UInt8(result & 0xff)
             state.condition_bits.carry = UInt8((result & 0xffff0000) > 0)
+        case .ldax_b_c:
+            let address = "\(state.registers.b.hex)\(state.registers.c.hex)"
+            state.registers.a = memory[Int(address, radix: 16)!]
         case .dcr_c:
             let (overflow, _) = state.registers.c.subtractingReportingOverflow(1)
             updateConditionBits(Int(overflow), state: &state)
@@ -145,6 +148,8 @@ public class CPU {
         case .mvi_m:
             let address = Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)!
             try write(memory[state.pc + 1], at: address)
+        case .stc:
+            state.condition_bits.carry = 1
         case .lda:
             let address = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
             state.registers.a = memory[address]
@@ -247,9 +252,6 @@ public class CPU {
                 return code.cycleCount
             }
         case .jmp:
-            if "\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)" == "008c" {
-                print("")
-            }
             state.pc = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
             return code.cycleCount
         case .push_b:

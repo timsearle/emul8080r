@@ -22,14 +22,69 @@
                                     <constraint firstAttribute="width" secondItem="RC2-Qj-iqU" secondAttribute="height" multiplier="1:1" id="SAo-sZ-ZRp"/>
                                 </constraints>
                             </imageView>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="9z5-GM-iVt">
+                                <rect key="frame" x="0.0" y="671" width="414" height="30"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wCF-IF-QjO">
+                                        <rect key="frame" x="0.0" y="0.0" width="138" height="30"/>
+                                        <state key="normal" title="Left"/>
+                                        <connections>
+                                            <action selector="leftDown:" destination="BYZ-38-t0r" eventType="touchDown" id="VJc-Qz-HbU"/>
+                                            <action selector="leftUp:" destination="BYZ-38-t0r" eventType="touchUpInside" id="ELK-2c-wxP"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Gka-Wh-z5b">
+                                        <rect key="frame" x="138" y="0.0" width="138" height="30"/>
+                                        <state key="normal" title="Fire"/>
+                                        <connections>
+                                            <action selector="fireDown:" destination="BYZ-38-t0r" eventType="touchDown" id="flY-eA-m9w"/>
+                                            <action selector="fireUp:" destination="BYZ-38-t0r" eventType="touchUpInside" id="u8q-R0-g5h"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hO3-ya-RDy">
+                                        <rect key="frame" x="276" y="0.0" width="138" height="30"/>
+                                        <state key="normal" title="Right"/>
+                                        <connections>
+                                            <action selector="rightDown:" destination="BYZ-38-t0r" eventType="touchDown" id="XES-MU-xsH"/>
+                                            <action selector="rightUp:" destination="BYZ-38-t0r" eventType="touchUpInside" id="KO7-4e-yXs"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="W2N-LT-hPb">
+                                <rect key="frame" x="0.0" y="191" width="414" height="30"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fDf-4S-MsG">
+                                        <rect key="frame" x="0.0" y="0.0" width="138" height="30"/>
+                                        <state key="normal" title="1P Start"/>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3UM-CZ-kgP">
+                                        <rect key="frame" x="138" y="0.0" width="138" height="30"/>
+                                        <state key="normal" title="Insert Coin"/>
+                                        <connections>
+                                            <action selector="coin:" destination="BYZ-38-t0r" eventType="touchUpInside" id="8ap-xJ-Ard"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iKV-RG-fCK">
+                                        <rect key="frame" x="276" y="0.0" width="138" height="30"/>
+                                        <state key="normal" title="2P Start"/>
+                                    </button>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="RC2-Qj-iqU" firstAttribute="top" secondItem="W2N-LT-hPb" secondAttribute="bottom" constant="20" id="0ZN-vt-BaO"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="W2N-LT-hPb" secondAttribute="trailing" id="85R-yK-IOu"/>
                             <constraint firstAttribute="trailing" secondItem="RC2-Qj-iqU" secondAttribute="trailing" id="9iQ-7K-96Z"/>
                             <constraint firstItem="RC2-Qj-iqU" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="AvF-t3-1RT"/>
                             <constraint firstItem="RC2-Qj-iqU" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="HJK-AB-q9a"/>
                             <constraint firstItem="RC2-Qj-iqU" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="ILO-7z-sda"/>
+                            <constraint firstItem="9z5-GM-iVt" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="VcF-gy-ahS"/>
+                            <constraint firstItem="W2N-LT-hPb" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="dxl-G1-bbm"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="9z5-GM-iVt" secondAttribute="trailing" id="p7z-T6-yWp"/>
+                            <constraint firstItem="9z5-GM-iVt" firstAttribute="top" secondItem="RC2-Qj-iqU" secondAttribute="bottom" constant="16" id="tmw-cW-aTF"/>
                         </constraints>
                     </view>
                     <connections>
