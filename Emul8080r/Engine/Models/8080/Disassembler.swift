@@ -28,7 +28,7 @@ struct Disassembler {
         var value = 1
 
         DispatchQueue.main.async {
-            print("\(String(offset, radix: 16)) \(code)", terminator: " ")
+            print("0x\(String(offset, radix: 16)) \(code)", terminator: " ")
         }
 
         var hex = ""
@@ -41,7 +41,7 @@ struct Disassembler {
         if !hex.isEmpty {
             hex.insert(contentsOf: "0x", at: hex.startIndex)
         }
-        
+
         DispatchQueue.main.async {
             print(hex)
         }

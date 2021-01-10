@@ -16,10 +16,6 @@ public final class InvaderMachine {
     private let cpu: CPU
     private let shiftRegister = ShiftRegister()
 
-    private var lastExecutionTime: TimeInterval = 0
-    private var nextInterrupt: TimeInterval = 0
-    private var whichInterrupt: Int = 0
-
     private var inputPorts: [UInt8] = [0b00001110, 0b00001000, 0, 0]
 
     private func captureState() -> SaveState {
@@ -44,27 +40,18 @@ public final class InvaderMachine {
         cpu.machineOut = machineOut
     }
 
-    public func play() {
-        if lastExecutionTime == 0.0 {
-            lastExecutionTime = Date().timeIntervalSince1970
-            nextInterrupt = lastExecutionTime + 0.016
-            whichInterrupt = 1
-        }
+    var queue = DispatchQueue(label: "tim.test")
 
-        Timer.scheduledTimer(withTimeInterval: 0.001, repeats: true) { timer in
-            do {
-                self.lastExecutionTime = try self.cpu.start(previousExecutionTime: self.lastExecutionTime, interruptProvider: {
-                    let now = Date().timeIntervalSince1970
-                    if now > self.nextInterrupt {
-                        try! self.cpu.interrupt(self.whichInterrupt)
-                        self.whichInterrupt = self.whichInterrupt == 1 ? 2 : 1
-                        self.nextInterrupt = now + 0.008
-                    }
-                })
-            } catch {
-                UserDefaults.standard.setValue(try! JSONEncoder().encode(self.captureState()), forKey: "PreviousState")
-                print(error)
-                timer.invalidate()
+    public func play() {
+        queue.async {
+            while true {
+                do {
+                    try self.cpu.start()
+                } catch {
+                    UserDefaults.standard.setValue(try! JSONEncoder().encode(self.captureState()), forKey: "PreviousState")
+                    print(error)
+                    break
+                }
             }
         }
     }
@@ -115,6 +102,7 @@ public final class InvaderMachine {
     }
 
     private func machineIn(_ port: UInt8) -> UInt8 {
+        print("IN: \(port)")
         switch port {
         case 3:
             return shiftRegister.in(port: port)
@@ -124,6 +112,7 @@ public final class InvaderMachine {
     }
 
     private func machineOut(_ port: UInt8, _ value: UInt8) {
+        print("OUT: \(port) ACC: \(value)")
         switch port {
         case 2, 4:
             return shiftRegister.out(port: port, value: value)

@@ -22,6 +22,7 @@
 		22B63DA625A3959A008E785F /* UInt8+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2266548825A2295A00297D3B /* UInt8+Extensions.swift */; };
 		22B63DAA25A399EA008E785F /* UIImage+Bitmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B63DA925A399EA008E785F /* UIImage+Bitmap.swift */; };
 		22B63DAE25A39A13008E785F /* Bitmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B63DAD25A39A13008E785F /* Bitmap.swift */; };
+		22B63DB525AA440D008E785F /* TimeHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 22B63DB425AA440D008E785F /* TimeHelper.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +43,9 @@
 		22B63D9425A3950A008E785F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		22B63DA925A399EA008E785F /* UIImage+Bitmap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Bitmap.swift"; sourceTree = "<group>"; };
 		22B63DAD25A39A13008E785F /* Bitmap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bitmap.swift; sourceTree = "<group>"; };
+		22B63DB325AA4409008E785F /* Emul8080r-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Emul8080r-Bridging-Header.h"; sourceTree = "<group>"; };
+		22B63DB425AA440D008E785F /* TimeHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimeHelper.m; sourceTree = "<group>"; };
+		22B63DB725AA4449008E785F /* TimeHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeHelper.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +64,7 @@
 			children = (
 				22B63D8525A39509008E785F /* Emul8080r */,
 				22665467259E35BC00297D3B /* Products */,
+				22B63DB325AA4409008E785F /* Emul8080r-Bridging-Header.h */,
 			);
 			sourceTree = "<group>";
 		};
@@ -74,6 +79,8 @@
 		2266548725A2294A00297D3B /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				22B63DB725AA4449008E785F /* TimeHelper.h */,
+				22B63DB425AA440D008E785F /* TimeHelper.m */,
 				2266548825A2295A00297D3B /* UInt8+Extensions.swift */,
 			);
 			path = Extensions;
@@ -173,6 +180,7 @@
 				TargetAttributes = {
 					22B63D8325A39509008E785F = {
 						CreatedOnToolsVersion = 12.2;
+						LastSwiftMigration = 1220;
 					};
 				};
 			};
@@ -217,6 +225,7 @@
 				22B63DA425A39593008E785F /* Disassembler.swift in Sources */,
 				22B63DA125A39593008E785F /* InvaderMachine.swift in Sources */,
 				22B63DAE25A39A13008E785F /* Bitmap.swift in Sources */,
+				22B63DB525AA440D008E785F /* TimeHelper.m in Sources */,
 				22B63DAA25A399EA008E785F /* UIImage+Bitmap.swift in Sources */,
 				22B63D8B25A39509008E785F /* ViewController.swift in Sources */,
 				22B63D8725A39509008E785F /* AppDelegate.swift in Sources */,
@@ -370,6 +379,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = AFZ4443Y2P;
 				INFOPLIST_FILE = Emul8080r/Info.plist;
@@ -381,6 +391,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = dev.searle.Emul8080r;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "Emul8080r-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -391,6 +403,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = AFZ4443Y2P;
 				INFOPLIST_FILE = Emul8080r/Info.plist;
@@ -402,6 +415,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = dev.searle.Emul8080r;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "Emul8080r-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;

@@ -29,27 +29,48 @@ public class CPU {
         disassembler = Disassembler(data: data)
     }
 
-    public func interrupt(_ value: Int) throws {
-        if state.inte == 0x01 {
-            state.inte = 0x00 // Reset the interrupt to disabled
-            try push(high: UInt8((state.pc >> 8) & 0xff), low: UInt8(state.pc & 0xff))
-            state.pc = 8 * value
+    public func interrupt(_ value: Int) throws -> Bool {
+        guard state.inte == 0x01 else {
+            return false
         }
+
+        print("INTERRUPT: \(value)")
+
+        state.inte = 0x00 // Reset the interrupt to disabled
+        try push(high: UInt8((state.pc >> 8) & 0xff), low: UInt8(state.pc & 0xff))
+        state.pc = 8 * value
+
+        return true
     }
 
-    public func start(previousExecutionTime: TimeInterval, interruptProvider: () -> Void) throws -> TimeInterval {
-        interruptProvider()
+    private var lastExecutionTime: Double = 0
+    private var nextInterrupt: Double = 0
+    private var whichInterrupt: Int = 0
 
-        let now = Date().timeIntervalSince1970
-        let sinceLast = (now - previousExecutionTime)*1000
-        let cycles_to_catch_up = Int(2 * sinceLast)
+    public func start() throws {
+        let now = TimeHelper.timeusec()
+
+        if lastExecutionTime == 0.0 {
+            lastExecutionTime = now
+            nextInterrupt = lastExecutionTime + 16000
+            whichInterrupt = 1
+        }
+        
+        if now > nextInterrupt {
+            _ = try interrupt(whichInterrupt)
+            whichInterrupt = whichInterrupt == 1 ? 2 : 1
+            nextInterrupt = now + 8000
+        }
+
+        let sinceLast = (now - lastExecutionTime)
+        let cycles_to_catch_up = min(Int(sinceLast),10000)
         var cycles = 0
 
         while cycles_to_catch_up > cycles {
             cycles += try execute()
         }
 
-        return now
+        lastExecutionTime = now
     }
 
     public func execute() throws -> Int {
@@ -59,6 +80,10 @@ public class CPU {
 
         if loggingEnabled {
             try _ = disassembler.disassembleOpCode(offset: Int(state.pc))
+        }
+
+        if state.pc == Int("0020", radix: 16) {
+            print("")
         }
 
         switch code {
@@ -76,6 +101,14 @@ public class CPU {
             let (overflow, _) = state.registers.b.subtractingReportingOverflow(1)
             updateConditionBits(Int(overflow), state: &state)
             state.registers.b = overflow
+        case .inr_b:
+            let (overflow, _) = state.registers.b.addingReportingOverflow(1)
+            updateConditionBits(Int(overflow), state: &state)
+            state.registers.b = overflow
+        case .rlc:
+            let value = state.registers.a
+            state.registers.a = ((value & 0x80) >> 7) | value << 1
+            state.condition_bits.carry = UInt8((value & 0x80) == 0x80)
         case .mvi_b:
             state.registers.b = memory[state.pc + 1]
         case .dad_b_c:
@@ -96,10 +129,15 @@ public class CPU {
             state.registers.c = overflow
         case .mvi_c:
             state.registers.c = memory[state.pc + 1]
+        case .rar:
+            let accumulator = state.registers.a >> 1
+            let value = accumulator | (state.condition_bits.carry << 7)
+            state.condition_bits.carry = UInt8((state.registers.a & 0x01) == 0x01)
+            state.registers.a = value
         case .rrc:
             let accumulator = state.registers.a
             state.registers.a = ((accumulator & 1) << 7) | accumulator >> 1
-            state.condition_bits.carry = state.registers.a & 0x01
+            state.condition_bits.carry = UInt8((accumulator & 0x01) == 0x01)
         case .lxi_d_e:
             state.registers.e = memory[state.pc + 1]
             state.registers.d = memory[state.pc + 2]
@@ -108,6 +146,16 @@ public class CPU {
             value += 1
             state.registers.d = UInt8((value >> 8) & 0xff)
             state.registers.e = UInt8(value & 0xff)
+        case .inr_d:
+            let (overflow, _) = state.registers.d.addingReportingOverflow(1)
+            updateConditionBits(Int(overflow), state: &state)
+            state.registers.d = overflow
+        case .dcr_d:
+            let (overflow, _) = state.registers.d.subtractingReportingOverflow(1)
+            updateConditionBits(Int(overflow), state: &state)
+            state.registers.d = overflow
+        case .mvi_d:
+            state.registers.d = memory[state.pc + 1]
         case .dad_d_e:
             let de = Int("\(state.registers.d.hex)\(state.registers.e.hex)", radix: 16)!
             let hl = Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)!
@@ -120,11 +168,15 @@ public class CPU {
         case .ldax_d_e:
             let address = "\(state.registers.d.hex)\(state.registers.e.hex)"
             state.registers.a = memory[Int(address, radix: 16)!]
+        case .mvi_e:
+            state.registers.e = memory[state.pc + 1]
         case .lxi_h_l:
             state.registers.l = memory[state.pc + 1]
             state.registers.h = memory[state.pc + 2]
         case .shld:
-            throw Error.unhandledOperation(code)
+            let address = Int(memory[state.pc + 2].hex + memory[state.pc + 1].hex, radix: 16)!
+            try write(state.registers.l, at: address)
+            try write(state.registers.h, at: address + 1)
         case .inx_h_l:
             var value = Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)!
             value += 1
@@ -139,8 +191,17 @@ public class CPU {
             state.registers.h = UInt8((result & 0xff00) >> 8)
             state.registers.l = UInt8(result & 0xff)
             state.condition_bits.carry = UInt8((result & 0xffff0000) > 0)
+        case .lhld:
+            let address = Int(memory[state.pc + 2].hex + memory[state.pc + 1].hex, radix: 16)!
+            state.registers.l = memory[address]
+            state.registers.h = memory[address + 1]
         case .dcx_h_l:
-            throw Error.unhandledOperation(code)
+            var value = Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)!
+            value -= 1
+            state.registers.h = UInt8((value >> 8) & 0xff)
+            state.registers.l = UInt8(value & 0xff)
+        case .mvi_l:
+            state.registers.l = memory[state.pc + 1]
         case .lxi_sp:
             state.sp = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
         case .sta:
@@ -159,6 +220,10 @@ public class CPU {
         case .lda:
             let address = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
             state.registers.a = memory[address]
+        case .inr_a:
+            let (overflow, _) = state.registers.a.addingReportingOverflow(1)
+            updateConditionBits(Int(overflow), state: &state)
+            state.registers.a = overflow
         case .dcr_a:
             let (overflow, _) = state.registers.a.subtractingReportingOverflow(1)
             updateConditionBits(Int(overflow), state: &state)
@@ -365,6 +430,29 @@ public class CPU {
             state.registers.a ^= state.registers.a
             state.condition_bits.carry = 0
             updateConditionBits(Int(state.registers.a), state: &state)
+        case .ora_b:
+            state.registers.a |= state.registers.b
+        case .ora_c:
+            state.registers.a |= state.registers.c
+        case .ora_d:
+            state.registers.a |= state.registers.d
+        case .ora_e:
+            state.registers.a |= state.registers.e
+        case .ora_h:
+            state.registers.a |= state.registers.h
+        case .ora_l:
+            state.registers.a |= state.registers.l
+        case .ora_m:
+            let offset = "\(state.registers.h.hex)\(state.registers.l.hex)"
+            state.registers.a |= memory[Int(offset, radix: 16)!]
+        case .ora_a:
+            state.registers.a |= state.registers.a
+        case .rnz:
+            if state.condition_bits.zero == 0 {
+                let (high, low) = try pop()
+                state.pc = Int("\(high.hex)\(low.hex)", radix: 16)!
+                return code.cycleCount
+            }
         case .pop_b:
             let (high, low) = try pop()
             state.registers.b = high
@@ -377,6 +465,13 @@ public class CPU {
         case .jmp:
             state.pc = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
             return code.cycleCount
+        case .cnz:
+            if state.condition_bits.zero == 0 {
+                let returnAddress = state.pc + code.size
+                try push(high: UInt8((returnAddress >> 8) & 0xff), low: UInt8(returnAddress & 0xff))
+                state.pc = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
+                return code.cycleCount
+            }
         case .push_b:
             try push(high: state.registers.b, low: state.registers.c)
         case .adi:
@@ -401,6 +496,13 @@ public class CPU {
                 state.pc = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
                 return code.cycleCount
             }
+        case .cz:
+            if state.condition_bits.zero == 1 {
+                let returnAddress = state.pc + code.size
+                try push(high: UInt8((returnAddress >> 8) & 0xff), low: UInt8(returnAddress & 0xff))
+                state.pc = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
+                return code.cycleCount
+            }
         case .call:
             let returnAddress = state.pc + code.size
             try push(high: UInt8((returnAddress >> 8) & 0xff), low: UInt8(returnAddress & 0xff))
@@ -421,12 +523,28 @@ public class CPU {
             machineOut?(port, accumulator)
         case .push_d:
             try push(high: state.registers.d, low: state.registers.e)
-        case .ret_c:
+        case .sui:
+            let (overflow, _) = state.registers.a.subtractingReportingOverflow(memory[state.pc + 1])
+            updateConditionBits(Int(overflow), state: &state)
+            state.registers.a = overflow
+        case .rc:
             if state.condition_bits.carry == 1 {
                 let (high, low) = try pop()
                 state.pc = Int("\(high.hex)\(low.hex)", radix: 16)!
                 return code.cycleCount
             }
+        case .rp:
+            throw Error.unhandledOperation(code)
+        case .rpe:
+            throw Error.unhandledOperation(code)
+        case .rnc:
+            if state.condition_bits.carry == 0 {
+                let (high, low) = try pop()
+                state.pc = Int("\(high.hex)\(low.hex)", radix: 16)!
+                return code.cycleCount
+            }
+        case .rpo:
+            throw Error.unhandledOperation(code)
         case .jc:
             if state.condition_bits.carry == 1 {
                 state.pc = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
@@ -435,6 +553,12 @@ public class CPU {
         case .in:
             let device = memory[state.pc + 1]
             state.registers.a = machineIn?(device) ?? state.registers.a
+        case .sbi:
+            let data = memory[state.pc + 1] + state.condition_bits.carry
+            let (overflow, _) = state.registers.a.subtractingReportingOverflow(data)
+            state.registers.a = overflow
+            updateConditionBits(Int(overflow), state: &state)
+            state.condition_bits.carry = UInt8(overflow > 0xff)
         case .pop_h:
             let (high, low) = try pop()
             state.registers.h = high
@@ -463,6 +587,19 @@ public class CPU {
             state.inte = 0x00
         case .push_psw:
             try push(high: state.registers.a, low: state.condition_bits.byte)
+        case .ori:
+            state.registers.a |= memory[state.pc + 1]
+        case .rm:
+            if state.condition_bits.sign == 1 {
+                let (high, low) = try pop()
+                state.pc = Int("\(high.hex)\(low.hex)", radix: 16)!
+                return code.cycleCount
+            }
+        case .jm:
+            if state.condition_bits.sign == 1 {
+                state.pc = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
+                return code.cycleCount
+            }
         case .ei:
             state.inte = 0x01
         case .cpi:

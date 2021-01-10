@@ -4,8 +4,10 @@ enum OpCode: UInt8, CustomStringConvertible {
     case nop = 0x00
     case lxi_b_c = 0x01
     case inx_b_c = 0x03
+    case inr_b = 0x04
     case dcr_b = 0x05
     case mvi_b = 0x06
+    case rlc = 0x07
     case dad_b_c = 0x09
     case ldax_b_c = 0x0a
     case dcr_c = 0x0d
@@ -13,24 +15,31 @@ enum OpCode: UInt8, CustomStringConvertible {
     case rrc = 0x0f
     case lxi_d_e = 0x11
     case inx_d_e = 0x13
+    case inr_d = 0x14
+    case dcr_d = 0x15
+    case mvi_d = 0x16
     case dad_d_e = 0x19
     case ldax_d_e = 0x1a
+    case mvi_e = 0x1e
+    case rar = 0x1f
     case lxi_h_l = 0x21
     case shld = 0x22
     case inx_h_l = 0x23
     case mvi_h = 0x26
     case daa = 0x27
     case dad_h_l = 0x29
+    case lhld = 0x2a
     case dcx_h_l = 0x2b
+    case mvi_l = 0x2e
     case lxi_sp = 0x31
     case sta = 0x32
     case dcr_m = 0x35
     case mvi_m = 0x36
     case stc = 0x37
     case lda = 0x3a
+    case inr_a = 0x3c
     case dcr_a = 0x3d
     case mvi_a = 0x3e
-
     case mov_b_b = 0x40
     case mov_b_c = 0x41
     case mov_b_d = 0x42
@@ -39,7 +48,6 @@ enum OpCode: UInt8, CustomStringConvertible {
     case mov_b_l = 0x45
     case mov_b_m = 0x46
     case mov_b_a = 0x47
-
     case mov_c_b = 0x48
     case mov_c_c = 0x49
     case mov_c_d = 0x4a
@@ -48,7 +56,6 @@ enum OpCode: UInt8, CustomStringConvertible {
     case mov_c_l = 0x4d
     case mov_c_m = 0x4e
     case mov_c_a = 0x4f
-
     case mov_d_b = 0x50
     case mov_d_c = 0x51
     case mov_d_d = 0x52
@@ -57,7 +64,6 @@ enum OpCode: UInt8, CustomStringConvertible {
     case mov_d_l = 0x55
     case mov_d_m = 0x56
     case mov_d_a = 0x57
-
     case mov_e_b = 0x58
     case mov_e_c = 0x59
     case mov_e_d = 0x5a
@@ -66,7 +72,6 @@ enum OpCode: UInt8, CustomStringConvertible {
     case mov_e_l = 0x5d
     case mov_e_m = 0x5e
     case mov_e_a = 0x5f
-
     case mov_h_b = 0x60
     case mov_h_c = 0x61
     case mov_h_d = 0x62
@@ -75,7 +80,6 @@ enum OpCode: UInt8, CustomStringConvertible {
     case mov_h_l = 0x65
     case mov_h_m = 0x66
     case mov_h_a = 0x67
-
     case mov_l_b = 0x68
     case mov_l_c = 0x69
     case mov_l_d = 0x6a
@@ -84,16 +88,13 @@ enum OpCode: UInt8, CustomStringConvertible {
     case mov_l_l = 0x6d
     case mov_l_m = 0x6e
     case mov_l_a = 0x6f
-
     case mov_m_b = 0x70
     case mov_m_c = 0x71
     case mov_m_d = 0x72
     case mov_m_e = 0x73
     case mov_m_h = 0x74
     case mov_m_l = 0x75
-
     case mov_m_a = 0x77
-
     case mov_a_b = 0x78
     case mov_a_c = 0x79
     case mov_a_d = 0x7a
@@ -102,7 +103,6 @@ enum OpCode: UInt8, CustomStringConvertible {
     case mov_a_l = 0x7d
     case mov_a_m = 0x7e
     case mov_a_a = 0x7f
-
     case add_b = 0x80
     case add_c = 0x81
     case add_d = 0x82
@@ -120,29 +120,49 @@ enum OpCode: UInt8, CustomStringConvertible {
     case ana_m = 0xa6
     case ana_a = 0xa7
     case xra_a = 0xaf
+    case ora_b = 0xb0
+    case ora_c = 0xb1
+    case ora_d = 0xb2
+    case ora_e = 0xb3
+    case ora_h = 0xb4
+    case ora_l = 0xb5
+    case ora_m = 0xb6
+    case ora_a = 0xb7
+    case rnz = 0xc0
     case pop_b = 0xc1
     case jnz = 0xc2
     case jmp = 0xc3
+    case cnz = 0xc4
     case push_b = 0xc5
     case adi = 0xc6
     case rz = 0xc8
     case ret = 0xc9
     case jz = 0xca
+    case cz = 0xcc
     case call = 0xcd
+    case rnc = 0xd0
     case pop_d = 0xd1
     case jnc = 0xd2
     case out = 0xd3
     case push_d = 0xd5
-    case ret_c = 0xd8
+    case sui = 0xd6
+    case rc = 0xd8
     case jc = 0xda
     case `in` = 0xdb
+    case sbi = 0xde
+    case rpo = 0xe0
     case pop_h = 0xe1
     case push_h = 0xe5
     case ani = 0xe6
+    case rpe = 0xe8
     case xchg = 0xeb
+    case rp = 0xf0
     case pop_psw = 0xf1
     case di = 0xf3
     case push_psw = 0xf5
+    case ori = 0xf6
+    case rm = 0xf8
+    case jm = 0xfa
     case ei = 0xfb
     case cpi = 0xfe
 
@@ -172,11 +192,11 @@ enum OpCode: UInt8, CustomStringConvertible {
 
     var size: Int {
         switch self {
-        case .nop, .inx_b_c, .dcr_b, .dad_b_c, .ldax_b_c, .dcr_c, .rrc, .inx_d_e, .dad_d_e, .ldax_d_e, .inx_h_l, .daa, .dcr_a, .dad_h_l, .dcx_h_l, .dcr_m, .stc, .mov_b_b, .mov_b_c, .mov_b_d, .mov_b_e, .mov_b_h, .mov_b_l, .mov_b_m, .mov_b_a, .mov_c_b, .mov_c_c, .mov_c_d, .mov_c_e, .mov_c_h, .mov_c_l, .mov_c_m, .mov_c_a, .mov_d_b, .mov_d_c, .mov_d_d, .mov_d_e, .mov_d_h, .mov_d_l, .mov_d_m, .mov_d_a, .mov_e_b, .mov_e_c, .mov_e_d, .mov_e_e, .mov_e_h, .mov_e_l, .mov_e_m, .mov_e_a, .mov_h_b, .mov_h_c, .mov_h_d, .mov_h_e, .mov_h_h, .mov_h_l, .mov_h_m, .mov_h_a, .mov_l_b, .mov_l_c, .mov_l_d, .mov_l_e, .mov_l_h, .mov_l_l, .mov_l_m, .mov_l_a, .mov_m_b, .mov_m_c, .mov_m_d, .mov_m_e, .mov_m_h, .mov_m_l, .mov_m_a, .mov_a_b, .mov_a_c, .mov_a_d, .mov_a_e, .mov_a_h, .mov_a_l, .mov_a_m, .mov_a_a, .add_b, .add_c, .add_d, .add_e, .add_h, .add_l, .add_m, .add_a, .ana_b, .ana_c, .ana_d, .ana_e, .ana_h, .ana_l, .ana_m, .ana_a, .xra_a, .pop_b, .push_b, .rz, .ret, .pop_d, .push_d, .ret_c, .pop_h, .push_h, .xchg, .pop_psw, .di, .push_psw, .ei:
+        case .nop, .inx_b_c, .inr_b, .dcr_b, .rlc, .dad_b_c, .ldax_b_c, .rar, .dcr_c, .rrc, .inx_d_e, .dad_d_e, .ldax_d_e, .inr_d, .dcr_d, .inx_h_l, .daa, .dcr_a, .dad_h_l, .dcx_h_l, .dcr_m, .inr_a, .stc, .mov_b_b, .mov_b_c, .mov_b_d, .mov_b_e, .mov_b_h, .mov_b_l, .mov_b_m, .mov_b_a, .mov_c_b, .mov_c_c, .mov_c_d, .mov_c_e, .mov_c_h, .mov_c_l, .mov_c_m, .mov_c_a, .mov_d_b, .mov_d_c, .mov_d_d, .mov_d_e, .mov_d_h, .mov_d_l, .mov_d_m, .mov_d_a, .mov_e_b, .mov_e_c, .mov_e_d, .mov_e_e, .mov_e_h, .mov_e_l, .mov_e_m, .mov_e_a, .mov_h_b, .mov_h_c, .mov_h_d, .mov_h_e, .mov_h_h, .mov_h_l, .mov_h_m, .mov_h_a, .mov_l_b, .mov_l_c, .mov_l_d, .mov_l_e, .mov_l_h, .mov_l_l, .mov_l_m, .mov_l_a, .mov_m_b, .mov_m_c, .mov_m_d, .mov_m_e, .mov_m_h, .mov_m_l, .mov_m_a, .mov_a_b, .mov_a_c, .mov_a_d, .mov_a_e, .mov_a_h, .mov_a_l, .mov_a_m, .mov_a_a, .add_b, .add_c, .add_d, .add_e, .add_h, .add_l, .add_m, .add_a, .ana_b, .ana_c, .ana_d, .ana_e, .ana_h, .ana_l, .ana_m, .ana_a, .xra_a, .ora_b, .ora_c, .ora_d, .ora_e, .ora_h, .ora_l, .ora_m, .ora_a, .rnz, .pop_b, .push_b, .rz, .ret, .pop_d, .push_d, .rc, .rp, .rpo, .rpe, .rm, .rnc, .pop_h, .push_h, .xchg, .pop_psw, .di, .push_psw, .ei:
             return 1
-        case .mvi_b, .mvi_c, .mvi_h, .mvi_m, .mvi_a, .adi, .out, .in, .ani, .cpi:
+        case .mvi_b, .mvi_c, .mvi_d, .mvi_e, .mvi_h, .mvi_l, .mvi_m, .mvi_a, .sui, .adi, .out, .in, .sbi, .ani, .ori, .cpi:
             return 2
-        case .lxi_b_c, .lxi_d_e, .lxi_h_l, .lxi_sp, .shld, .lda, .sta, .jmp, .jnz, .jz, .call, .jnc, .jc:
+        case .lhld, .lxi_b_c, .lxi_d_e, .lxi_h_l, .lxi_sp, .shld, .lda, .sta, .jmp, .cnz, .jnz, .jz, .cz, .call, .jnc, .jc, .jm:
             return 3
         }
     }
@@ -189,6 +209,10 @@ enum OpCode: UInt8, CustomStringConvertible {
             return "LXI B C,#"
         case .inx_b_c:
             return "INX B C"
+        case .inr_b:
+            return "INR B"
+        case .rlc:
+            return "RLC"
         case .dcr_b:
             return "DCR B"
         case .mvi_b:
@@ -201,16 +225,26 @@ enum OpCode: UInt8, CustomStringConvertible {
             return "DAD B C"
         case .ldax_b_c:
             return "LDAX B C"
+        case .rar:
+            return "RAR"
         case .rrc:
             return "RRC"
         case .lxi_d_e:
             return "LXI D E,#"
         case .inx_d_e:
             return "INX D E"
+        case .inr_d:
+            return "INR D"
+        case .dcr_d:
+            return "DCR D"
+        case .mvi_d:
+            return "MVI D,#"
         case .dad_d_e:
             return "DAD D E"
         case .ldax_d_e:
             return "LDAX D E"
+        case .mvi_e:
+            return "MVI E,#"
         case .lxi_h_l:
             return "LXI H L,#"
         case .lxi_sp:
@@ -225,8 +259,12 @@ enum OpCode: UInt8, CustomStringConvertible {
             return "DAA"
         case .dad_h_l:
             return "DAD H L"
+        case .lhld:
+            return "LHLD"
         case .dcx_h_l:
             return "DCX H L"
+        case .mvi_l:
+            return "MVI L,#"
         case .sta:
             return "STA"
         case .dcr_m:
@@ -237,6 +275,8 @@ enum OpCode: UInt8, CustomStringConvertible {
             return "STC"
         case .lda:
             return "LDA"
+        case .inr_a:
+            return "INR A"
         case .dcr_a:
             return "DCR A"
         case .mvi_a:
@@ -401,12 +441,32 @@ enum OpCode: UInt8, CustomStringConvertible {
             return "ANA A"
         case .xra_a:
             return "XRA A"
+        case .ora_b:
+            return "ORA B"
+        case .ora_c:
+            return "ORA C"
+        case .ora_d:
+            return "ORA D"
+        case .ora_e:
+            return "ORA E"
+        case .ora_h:
+            return "ORA H"
+        case .ora_l:
+            return "ORA L"
+        case .ora_m:
+            return "ORA M"
+        case .ora_a:
+            return "ORA A"
+        case .rnz:
+            return "RNZ"
         case .pop_b:
             return "POP B"
         case .jnz:
             return "JNZ"
         case .jmp:
             return "JMP"
+        case .cnz:
+            return "CNZ"
         case .adi:
             return "ADI #"
         case .rz:
@@ -415,6 +475,8 @@ enum OpCode: UInt8, CustomStringConvertible {
             return "RET"
         case .jz:
             return "JZ"
+        case .cz:
+            return "CZ"
         case .call:
             return "CALL"
         case .push_b:
@@ -427,12 +489,16 @@ enum OpCode: UInt8, CustomStringConvertible {
             return "OUT"
         case .push_d:
             return "PUSH D"
-        case .ret_c:
+        case .sui:
+            return "SUB #"
+        case .rc:
             return "RET C"
         case .jc:
             return "JC"
         case .in:
             return "IN #"
+        case .sbi:
+            return "SUB #"
         case .pop_h:
             return "POP H"
         case .push_h:
@@ -447,6 +513,20 @@ enum OpCode: UInt8, CustomStringConvertible {
             return "DI"
         case .push_psw:
             return "PUSH PSW"
+        case .ori:
+            return "ORI #"
+        case .rnc:
+            return "RET NC"
+        case .rpo:
+            return "RET PO"
+        case .rpe:
+            return "RET PE"
+        case .rp:
+            return "RET P"
+        case .rm:
+            return "RET M"
+        case .jm:
+            return "JMP M"
         case .ei:
             return "EI"
         case .cpi:

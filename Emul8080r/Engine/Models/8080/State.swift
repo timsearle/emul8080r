@@ -1,11 +1,41 @@
 import Foundation
 
 public struct ConditionBits: Codable {
-    var zero: UInt8 = 0
-    var sign: UInt8 = 0
-    var parity: UInt8 = 0
-    var carry: UInt8 = 0
-    var aux_carry: UInt8 = 0
+    var zero: UInt8 = 0 {
+        didSet {
+            if zero != 0x00 && zero != 0x01 {
+                fatalError("Invalid condition bit")
+            }
+        }
+    }
+    var sign: UInt8 = 0 {
+        didSet {
+            if sign != 0x00 && sign != 0x01 {
+                fatalError("Invalid condition bit")
+            }
+        }
+    }
+    var parity: UInt8 = 0 {
+        didSet {
+            if parity != 0x00 && parity != 0x01 {
+                fatalError("Invalid condition bit")
+            }
+        }
+    }
+    var carry: UInt8 = 0 {
+        didSet {
+            if carry != 0x00 && carry != 0x01 {
+                fatalError("Invalid condition bit")
+            }
+        }
+    }
+    var aux_carry: UInt8 = 0 {
+        didSet {
+            if aux_carry != 0x00 && aux_carry != 0x01 {
+                fatalError("Invalid condition bit")
+            }
+        }
+    }
 
     var byte: UInt8 {
         UInt8("\(sign)\(zero)0\(aux_carry)0\(parity)1\(carry)", radix: 2)!

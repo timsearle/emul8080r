@@ -75,7 +75,7 @@ class ViewController: UIViewController {
     }
 
     @IBAction func coinUp(_ sender: Any) {
-        spaceInvaders.coin(state: .up)
+ //       spaceInvaders.coin(state: .up)
     }
 
     @IBAction func playerOneDown(_ sender: Any) {
