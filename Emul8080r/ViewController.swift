@@ -23,10 +23,10 @@ class ViewController: UIViewController {
         if enableCaching == "EnableCaching",
            let data = UserDefaults.standard.data(forKey: "PreviousState"),
            let saveState = try? JSONDecoder().decode(SaveState.self, from: data) {
-            self.spaceInvaders = InvaderMachine(saveState: saveState, loggingEnabled: true)
+            self.spaceInvaders = InvaderMachine(saveState: saveState, loggingEnabled: false)
             self.spaceInvaders.play()
         } else {
-            self.spaceInvaders = InvaderMachine(rom: data, loggingEnabled: true)
+            self.spaceInvaders = InvaderMachine(rom: data, loggingEnabled: false)
             self.spaceInvaders.play()
         }
 

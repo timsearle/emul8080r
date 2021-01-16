@@ -4,6 +4,7 @@ public class CPU {
     enum Error: Swift.Error {
         case unhandledOperation(OpCode)
         case cannotWriteToROM(Int)
+        case cannotWriteOutsideExpectedRAM(Int)
     }
 
     var machineIn: ((_ port: UInt8) -> UInt8)?
@@ -34,7 +35,7 @@ public class CPU {
             return false
         }
 
-        print("INTERRUPT: \(value)")
+        //print("INTERRUPT: \(value)")
 
         state.inte = 0x00 // Reset the interrupt to disabled
         try push(high: UInt8((state.pc >> 8) & 0xff), low: UInt8(state.pc & 0xff))
@@ -73,17 +74,20 @@ public class CPU {
         lastExecutionTime = now
     }
 
+    var previousCode: [(String, OpCode)] = []
+    var previousSP = 0
+
     public func execute() throws -> Int {
         guard let code = OpCode(rawValue: memory[Int(state.pc)]) else {
             throw Disassembler.Error.unknownCode(String(format: "%02x", memory[Int(state.pc)]))
         }
 
-        if loggingEnabled {
-            try _ = disassembler.disassembleOpCode(offset: Int(state.pc))
-        }
+        previousCode.append((String(state.pc, radix: 16), code))
 
-        if state.pc == Int("0020", radix: 16) {
-            print("")
+        if loggingEnabled {
+            DispatchQueue.main.async {
+                try! _ = self.disassembler.disassembleOpCode(offset: Int(self.state.pc))
+            }
         }
 
         switch code {
@@ -208,13 +212,12 @@ public class CPU {
             let address = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
             try write(state.registers.a, at: address)
         case .dcr_m:
-            let offset = Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)!
+            let offset = m_address()
             let (overflow, _) = UInt8(memory[offset]).subtractingReportingOverflow(1)
             try write(overflow, at: offset)
             updateConditionBits(Int(overflow), state: &state)
         case .mvi_m:
-            let address = Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)!
-            try write(memory[state.pc + 1], at: address)
+            try write(memory[state.pc + 1], at: m_address())
         case .stc:
             state.condition_bits.carry = 1
         case .lda:
@@ -243,8 +246,7 @@ public class CPU {
         case .mov_b_l:
             state.registers.b = state.registers.l
         case .mov_b_m:
-            let offset = "\(state.registers.h.hex)\(state.registers.l.hex)"
-            state.registers.b = memory[Int(offset, radix: 16)!]
+            state.registers.b = memory[m_address()]
         case .mov_b_a:
             state.registers.b = state.registers.a
         case .mov_c_b:
@@ -260,8 +262,7 @@ public class CPU {
         case .mov_c_l:
             state.registers.c = state.registers.l
         case .mov_c_m:
-            let offset = "\(state.registers.h.hex)\(state.registers.l.hex)"
-            state.registers.c = memory[Int(offset, radix: 16)!]
+            state.registers.c = memory[m_address()]
         case .mov_c_a:
             state.registers.c = state.registers.a
         case .mov_d_b:
@@ -277,8 +278,7 @@ public class CPU {
         case .mov_d_l:
             state.registers.d = state.registers.l
         case .mov_d_m:
-            let offset = "\(state.registers.h.hex)\(state.registers.l.hex)"
-            state.registers.d = memory[Int(offset, radix: 16)!]
+            state.registers.d = memory[m_address()]
         case .mov_d_a:
             state.registers.d = state.registers.a
         case .mov_e_b:
@@ -294,8 +294,7 @@ public class CPU {
         case .mov_e_l:
             state.registers.e = state.registers.l
         case .mov_e_m:
-            let offset = "\(state.registers.h.hex)\(state.registers.l.hex)"
-            state.registers.e = memory[Int(offset, radix: 16)!]
+            state.registers.e = memory[m_address()]
         case .mov_e_a:
             state.registers.e = state.registers.a
         case .mov_h_b:
@@ -311,8 +310,7 @@ public class CPU {
         case .mov_h_l:
             state.registers.h = state.registers.l
         case .mov_h_m:
-            let offset = "\(state.registers.h.hex)\(state.registers.l.hex)"
-            state.registers.h = memory[Int(offset, radix: 16)!]
+            state.registers.h = memory[m_address()]
         case .mov_h_a:
             state.registers.h = state.registers.a
         case .mov_l_b:
@@ -328,31 +326,23 @@ public class CPU {
         case .mov_l_l:
             break
         case .mov_l_m:
-            let offset = "\(state.registers.h.hex)\(state.registers.l.hex)"
-            state.registers.l = memory[Int(offset, radix: 16)!]
+            state.registers.l = memory[m_address()]
         case .mov_l_a:
             state.registers.l = state.registers.a
         case .mov_m_b:
-            let offset = Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)!
-            try write(state.registers.b, at: offset)
+            try write(state.registers.b, at: m_address())
         case .mov_m_c:
-            let offset = Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)!
-            try write(state.registers.c, at: offset)
+            try write(state.registers.c, at: m_address())
         case .mov_m_d:
-            let offset = Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)!
-            try write(state.registers.d, at: offset)
+            try write(state.registers.d, at: m_address())
         case .mov_m_e:
-            let offset = Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)!
-            try write(state.registers.e, at: offset)
+            try write(state.registers.e, at: m_address())
         case .mov_m_h:
-            let offset = Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)!
-            try write(state.registers.h, at: offset)
+            try write(state.registers.h, at: m_address())
         case .mov_m_l:
-            let offset = Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)!
-            try write(state.registers.l, at: offset)
+            try write(state.registers.l, at: m_address())
         case .mov_m_a:
-            let offset = Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)!
-            try write(state.registers.a, at: offset)
+            try write(state.registers.a, at: m_address())
         case .mov_a_b:
             state.registers.a = state.registers.b
         case .mov_a_c:
@@ -366,8 +356,7 @@ public class CPU {
         case .mov_a_l:
             state.registers.a = state.registers.l
         case .mov_a_m:
-            let offset = "\(state.registers.h.hex)\(state.registers.l.hex)"
-            state.registers.a = memory[Int(offset, radix: 16)!]
+            state.registers.a = memory[m_address()]
         case .mov_a_a:
             break
         case .add_b:
@@ -401,7 +390,7 @@ public class CPU {
             updateConditionBits(Int(state.registers.a), state: &state)
             state.condition_bits.carry = UInt8(result > 0xff)
         case .add_m:
-            let offset = UInt16((state.registers.h << 8) | state.registers.l)
+            let offset = memory[m_address()]
             let result = UInt16(state.registers.a + memory[Int(offset)])
             state.registers.a = UInt8(result & 0xff)
             updateConditionBits(Int(state.registers.a), state: &state)
@@ -443,8 +432,7 @@ public class CPU {
         case .ora_l:
             state.registers.a |= state.registers.l
         case .ora_m:
-            let offset = "\(state.registers.h.hex)\(state.registers.l.hex)"
-            state.registers.a |= memory[Int(offset, radix: 16)!]
+            state.registers.a |= memory[m_address()]
         case .ora_a:
             state.registers.a |= state.registers.a
         case .rnz:
@@ -640,10 +628,19 @@ public class CPU {
         return (high, low)
     }
 
+    private func m_address() -> Int {
+        return Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)!
+    }
+
     private func write(_ value: UInt8, at address: Int) throws {
         // validate not writing to ROM
         guard address >= 0x2000 else {
             throw Error.cannotWriteToROM(address)
+        }
+
+        // outside of space invaders RAM
+        guard address < 0x4000 else {
+            throw Error.cannotWriteOutsideExpectedRAM(address)
         }
 
         memory[address] = value

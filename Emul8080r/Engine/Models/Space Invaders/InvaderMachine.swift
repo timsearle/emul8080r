@@ -102,7 +102,7 @@ public final class InvaderMachine {
     }
 
     private func machineIn(_ port: UInt8) -> UInt8 {
-        print("IN: \(port)")
+        //print("IN: \(port)")
         switch port {
         case 3:
             return shiftRegister.in(port: port)
@@ -112,7 +112,7 @@ public final class InvaderMachine {
     }
 
     private func machineOut(_ port: UInt8, _ value: UInt8) {
-        print("OUT: \(port) ACC: \(value)")
+        //print("OUT: \(port) ACC: \(value)")
         switch port {
         case 2, 4:
             return shiftRegister.out(port: port, value: value)
