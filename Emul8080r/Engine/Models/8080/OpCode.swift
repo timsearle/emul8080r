@@ -225,8 +225,6 @@ enum OpCode: UInt8, CustomStringConvertible {
             return "DAD B C"
         case .ldax_b_c:
             return "LDAX B C"
-        case .rar:
-            return "RAR"
         case .rrc:
             return "RRC"
         case .lxi_d_e:
@@ -245,6 +243,8 @@ enum OpCode: UInt8, CustomStringConvertible {
             return "LDAX D E"
         case .mvi_e:
             return "MVI E,#"
+        case .rar:
+            return "RAR"
         case .lxi_h_l:
             return "LXI H L,#"
         case .lxi_sp:

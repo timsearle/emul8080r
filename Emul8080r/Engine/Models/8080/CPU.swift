@@ -101,20 +101,20 @@ public class CPU {
             value += 1
             state.registers.b = UInt8((value >> 8) & 0xff)
             state.registers.c = UInt8(value & 0xff)
-        case .dcr_b:
-            let (overflow, _) = state.registers.b.subtractingReportingOverflow(1)
-            updateConditionBits(Int(overflow), state: &state)
-            state.registers.b = overflow
         case .inr_b:
             let (overflow, _) = state.registers.b.addingReportingOverflow(1)
-            updateConditionBits(Int(overflow), state: &state)
             state.registers.b = overflow
+            updateZSP(Int(overflow), state: &state)
+        case .dcr_b:
+            let (overflow, _) = state.registers.b.subtractingReportingOverflow(1)
+            state.registers.b = overflow
+            updateZSP(Int(overflow), state: &state)
+        case .mvi_b:
+            state.registers.b = memory[state.pc + 1]
         case .rlc:
             let value = state.registers.a
             state.registers.a = ((value & 0x80) >> 7) | value << 1
             state.condition_bits.carry = UInt8((value & 0x80) == 0x80)
-        case .mvi_b:
-            state.registers.b = memory[state.pc + 1]
         case .dad_b_c:
             let bc = Int("\(state.registers.b.hex)\(state.registers.c.hex)", radix: 16)!
             let hl = Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)!
@@ -129,15 +129,10 @@ public class CPU {
             state.registers.a = memory[Int(address, radix: 16)!]
         case .dcr_c:
             let (overflow, _) = state.registers.c.subtractingReportingOverflow(1)
-            updateConditionBits(Int(overflow), state: &state)
             state.registers.c = overflow
+            updateZSP(Int(overflow), state: &state)
         case .mvi_c:
             state.registers.c = memory[state.pc + 1]
-        case .rar:
-            let accumulator = state.registers.a >> 1
-            let value = accumulator | (state.condition_bits.carry << 7)
-            state.condition_bits.carry = UInt8((state.registers.a & 0x01) == 0x01)
-            state.registers.a = value
         case .rrc:
             let accumulator = state.registers.a
             state.registers.a = ((accumulator & 1) << 7) | accumulator >> 1
@@ -152,12 +147,12 @@ public class CPU {
             state.registers.e = UInt8(value & 0xff)
         case .inr_d:
             let (overflow, _) = state.registers.d.addingReportingOverflow(1)
-            updateConditionBits(Int(overflow), state: &state)
             state.registers.d = overflow
+            updateZSP(Int(overflow), state: &state)
         case .dcr_d:
             let (overflow, _) = state.registers.d.subtractingReportingOverflow(1)
-            updateConditionBits(Int(overflow), state: &state)
             state.registers.d = overflow
+            updateZSP(Int(overflow), state: &state)
         case .mvi_d:
             state.registers.d = memory[state.pc + 1]
         case .dad_d_e:
@@ -174,6 +169,11 @@ public class CPU {
             state.registers.a = memory[Int(address, radix: 16)!]
         case .mvi_e:
             state.registers.e = memory[state.pc + 1]
+        case .rar:
+            let accumulator = state.registers.a >> 1
+            let value = accumulator | (state.condition_bits.carry << 7)
+            state.condition_bits.carry = UInt8((state.registers.a & 0x01) == 0x01)
+            state.registers.a = value
         case .lxi_h_l:
             state.registers.l = memory[state.pc + 1]
             state.registers.h = memory[state.pc + 2]
@@ -215,7 +215,7 @@ public class CPU {
             let offset = m_address()
             let (overflow, _) = UInt8(memory[offset]).subtractingReportingOverflow(1)
             try write(overflow, at: offset)
-            updateConditionBits(Int(overflow), state: &state)
+            updateZSP(Int(overflow), state: &state)
         case .mvi_m:
             try write(memory[state.pc + 1], at: m_address())
         case .stc:
@@ -225,12 +225,12 @@ public class CPU {
             state.registers.a = memory[address]
         case .inr_a:
             let (overflow, _) = state.registers.a.addingReportingOverflow(1)
-            updateConditionBits(Int(overflow), state: &state)
             state.registers.a = overflow
+            updateZSP(Int(overflow), state: &state)
         case .dcr_a:
             let (overflow, _) = state.registers.a.subtractingReportingOverflow(1)
-            updateConditionBits(Int(overflow), state: &state)
             state.registers.a = overflow
+            updateZSP(Int(overflow), state: &state)
         case .mvi_a:
             state.registers.a = memory[state.pc + 1]
         case .mov_b_b:
@@ -362,39 +362,32 @@ public class CPU {
         case .add_b:
             let result = UInt16(state.registers.a + state.registers.b)
             state.registers.a = UInt8(result & 0xff)
-            updateConditionBits(Int(state.registers.a), state: &state)
-            state.condition_bits.carry = UInt8(result > 0xff)
+            updateArithmeticZSPC(Int(state.registers.a), state: &state)
         case .add_c:
             let result = UInt16(state.registers.a + state.registers.c)
             state.registers.a = UInt8(result & 0xff)
-            updateConditionBits(Int(state.registers.a), state: &state)
-            state.condition_bits.carry = UInt8(result > 0xff)
+            updateArithmeticZSPC(Int(state.registers.a), state: &state)
         case .add_d:
             let result = UInt16(state.registers.a + state.registers.d)
             state.registers.a = UInt8(result & 0xff)
-            updateConditionBits(Int(state.registers.a), state: &state)
-            state.condition_bits.carry = UInt8(result > 0xff)
+            updateArithmeticZSPC(Int(state.registers.a), state: &state)
         case .add_e:
             let result = UInt16(state.registers.a + state.registers.e)
             state.registers.a = UInt8(result & 0xff)
-            updateConditionBits(Int(state.registers.a), state: &state)
-            state.condition_bits.carry = UInt8(result > 0xff)
+            updateArithmeticZSPC(Int(state.registers.a), state: &state)
         case .add_h:
             let result = UInt16(state.registers.a + state.registers.h)
             state.registers.a = UInt8(result & 0xff)
-            updateConditionBits(Int(state.registers.a), state: &state)
-            state.condition_bits.carry = UInt8(result > 0xff)
+            updateArithmeticZSPC(Int(state.registers.a), state: &state)
         case .add_l:
             let result = UInt16(state.registers.a + state.registers.l)
             state.registers.a = UInt8(result & 0xff)
-            updateConditionBits(Int(state.registers.a), state: &state)
-            state.condition_bits.carry = UInt8(result > 0xff)
+            updateArithmeticZSPC(Int(state.registers.a), state: &state)
         case .add_m:
-            let offset = memory[m_address()]
-            let result = UInt16(state.registers.a + memory[Int(offset)])
+            let value = memory[m_address()]
+            let result = UInt16(state.registers.a + value)
             state.registers.a = UInt8(result & 0xff)
-            updateConditionBits(Int(state.registers.a), state: &state)
-            state.condition_bits.carry = UInt8(result > 0xff)
+            updateArithmeticZSPC(Int(state.registers.a), state: &state)
         case .add_a:
             throw Error.unhandledOperation(code)
         case .ana_b:
@@ -413,28 +406,34 @@ public class CPU {
             throw Error.unhandledOperation(code)
         case .ana_a:
             state.registers.a &= state.registers.a
-            state.condition_bits.carry = 0
-            updateConditionBits(Int(state.registers.a), state: &state)
+            updateLogicZSPC(Int(state.registers.a), state: &state)
         case .xra_a:
             state.registers.a ^= state.registers.a
-            state.condition_bits.carry = 0
-            updateConditionBits(Int(state.registers.a), state: &state)
+            updateLogicZSPC(Int(state.registers.a), state: &state)
         case .ora_b:
             state.registers.a |= state.registers.b
+            updateLogicZSPC(Int(state.registers.a), state: &state)
         case .ora_c:
             state.registers.a |= state.registers.c
+            updateLogicZSPC(Int(state.registers.a), state: &state)
         case .ora_d:
             state.registers.a |= state.registers.d
+            updateLogicZSPC(Int(state.registers.a), state: &state)
         case .ora_e:
             state.registers.a |= state.registers.e
+            updateLogicZSPC(Int(state.registers.a), state: &state)
         case .ora_h:
             state.registers.a |= state.registers.h
+            updateLogicZSPC(Int(state.registers.a), state: &state)
         case .ora_l:
             state.registers.a |= state.registers.l
+            updateLogicZSPC(Int(state.registers.a), state: &state)
         case .ora_m:
             state.registers.a |= memory[m_address()]
+            updateLogicZSPC(Int(state.registers.a), state: &state)
         case .ora_a:
             state.registers.a |= state.registers.a
+            updateLogicZSPC(Int(state.registers.a), state: &state)
         case .rnz:
             if state.condition_bits.zero == 0 {
                 let (high, low) = try pop()
@@ -463,12 +462,10 @@ public class CPU {
         case .push_b:
             try push(high: state.registers.b, low: state.registers.c)
         case .adi:
-            // impacts condition bits
             let value = memory[state.pc + 1]
             let result = (UInt16(state.registers.a) + UInt16(value)) & 0xff
             state.registers.a = UInt8(result)
-            updateConditionBits(Int(state.registers.a), state: &state)
-            state.condition_bits.carry = UInt8(result > 0xff)
+            updateArithmeticZSPC(Int(state.registers.a), state: &state)
         case .rz:
             if state.condition_bits.zero == 1 {
                 let (high, low) = try pop()
@@ -513,8 +510,8 @@ public class CPU {
             try push(high: state.registers.d, low: state.registers.e)
         case .sui:
             let (overflow, _) = state.registers.a.subtractingReportingOverflow(memory[state.pc + 1])
-            updateConditionBits(Int(overflow), state: &state)
             state.registers.a = overflow
+            updateArithmeticZSPC(Int(state.registers.a), state: &state)
         case .rc:
             if state.condition_bits.carry == 1 {
                 let (high, low) = try pop()
@@ -545,8 +542,7 @@ public class CPU {
             let data = memory[state.pc + 1] + state.condition_bits.carry
             let (overflow, _) = state.registers.a.subtractingReportingOverflow(data)
             state.registers.a = overflow
-            updateConditionBits(Int(overflow), state: &state)
-            state.condition_bits.carry = UInt8(overflow > 0xff)
+            updateArithmeticZSPC(Int(state.registers.a), state: &state)
         case .pop_h:
             let (high, low) = try pop()
             state.registers.h = high
@@ -556,7 +552,7 @@ public class CPU {
         case .ani:
             state.registers.a = state.registers.a & memory[state.pc + 1]
             state.condition_bits.carry = 0
-            updateConditionBits(Int(state.registers.a), state: &state)
+            updateLogicZSPC(Int(state.registers.a), state: &state)
         case .xchg:
             let h = state.registers.h
             let l = state.registers.l
@@ -595,7 +591,7 @@ public class CPU {
             let value = Int(memory[state.pc + 1])
 
             state.condition_bits.carry = UInt8(accumulator < value)
-            updateConditionBits(accumulator - value, state: &state)
+            updateZSP(accumulator - value, state: &state)
         }
 
         state.pc += code.size
@@ -603,10 +599,24 @@ public class CPU {
         return code.cycleCount
     }
 
-    private func updateConditionBits(_ value: Int, state: inout State8080) {
-        state.condition_bits.zero = UInt8(value == 0)
+    private func updateZSP(_ value: Int, state: inout State8080) {
+        state.condition_bits.zero = UInt8((value & 0xff) == 0)
         state.condition_bits.sign = UInt8(0x80 == (value & 0x80))
-        state.condition_bits.parity = parity(Int(value))
+        state.condition_bits.parity = parity(value & 0xff)
+    }
+
+    private func updateArithmeticZSPC(_ value: Int, state: inout State8080) {
+        state.condition_bits.zero = UInt8((value & 0xff) == 0)
+        state.condition_bits.sign = UInt8(0x80 == (value & 0x80))
+        state.condition_bits.parity = parity(value & 0xff)
+        state.condition_bits.carry = UInt8(value > 0xff)
+    }
+
+    private func updateLogicZSPC(_ value: Int, state: inout State8080) {
+        state.condition_bits.zero = UInt8((value & 0xff) == 0)
+        state.condition_bits.sign = UInt8(0x80 == (value & 0x80))
+        state.condition_bits.parity = parity(value & 0xff)
+        state.condition_bits.carry = 0
     }
 
     private func parity(_ value: Int) -> UInt8 {
