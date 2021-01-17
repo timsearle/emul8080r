@@ -127,6 +127,10 @@ public class CPU {
         case .ldax_b_c:
             let address = "\(state.registers.b.hex)\(state.registers.c.hex)"
             state.registers.a = memory[Int(address, radix: 16)!]
+        case .inr_c:
+            let (overflow, _) = state.registers.c.addingReportingOverflow(1)
+            state.registers.c = overflow
+            updateZSP(Int(overflow), state: &state)
         case .dcr_c:
             let (overflow, _) = state.registers.c.subtractingReportingOverflow(1)
             state.registers.c = overflow
@@ -206,6 +210,10 @@ public class CPU {
             value -= 1
             state.registers.h = UInt8((value >> 8) & 0xff)
             state.registers.l = UInt8(value & 0xff)
+        case .inr_l:
+            let (overflow, _) = state.registers.l.addingReportingOverflow(1)
+            state.registers.l = overflow
+            updateZSP(Int(overflow), state: &state)
         case .mvi_l:
             state.registers.l = memory[state.pc + 1]
         case .lxi_sp:
@@ -213,6 +221,11 @@ public class CPU {
         case .sta:
             let address = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
             try write(state.registers.a, at: address)
+        case .inr_m:
+            let value = memory[m_address()]
+            let (overflow, _) = value.addingReportingOverflow(1)
+            try write(overflow, at: m_address())
+            updateZSP(Int(overflow), state: &state)
         case .dcr_m:
             let offset = m_address()
             let (overflow, _) = UInt8(memory[offset]).subtractingReportingOverflow(1)
@@ -362,32 +375,32 @@ public class CPU {
         case .mov_a_a:
             break
         case .add_b:
-            let result = UInt16(state.registers.a + state.registers.b)
+            let result = UInt16(state.registers.a) + UInt16(state.registers.b)
             state.registers.a = UInt8(result & 0xff)
             updateArithmeticZSPC(Int(state.registers.a), state: &state)
         case .add_c:
-            let result = UInt16(state.registers.a + state.registers.c)
+            let result = UInt16(state.registers.a) + UInt16(state.registers.c)
             state.registers.a = UInt8(result & 0xff)
             updateArithmeticZSPC(Int(state.registers.a), state: &state)
         case .add_d:
-            let result = UInt16(state.registers.a + state.registers.d)
+            let result = UInt16(state.registers.a) + UInt16(state.registers.d)
             state.registers.a = UInt8(result & 0xff)
             updateArithmeticZSPC(Int(state.registers.a), state: &state)
         case .add_e:
-            let result = UInt16(state.registers.a + state.registers.e)
+            let result = UInt16(state.registers.a) + UInt16(state.registers.e)
             state.registers.a = UInt8(result & 0xff)
             updateArithmeticZSPC(Int(state.registers.a), state: &state)
         case .add_h:
-            let result = UInt16(state.registers.a + state.registers.h)
+            let result = UInt16(state.registers.a) + UInt16(state.registers.h)
             state.registers.a = UInt8(result & 0xff)
             updateArithmeticZSPC(Int(state.registers.a), state: &state)
         case .add_l:
-            let result = UInt16(state.registers.a + state.registers.l)
+            let result = UInt16(state.registers.a) + UInt16(state.registers.l)
             state.registers.a = UInt8(result & 0xff)
             updateArithmeticZSPC(Int(state.registers.a), state: &state)
         case .add_m:
             let value = memory[m_address()]
-            let result = UInt16(state.registers.a + value)
+            let result = UInt16(state.registers.a) + UInt16(value)
             state.registers.a = UInt8(result & 0xff)
             updateArithmeticZSPC(Int(state.registers.a), state: &state)
         case .add_a:
@@ -446,6 +459,22 @@ public class CPU {
         case .ora_a:
             state.registers.a |= state.registers.a
             updateLogicZSPC(Int(state.registers.a), state: &state)
+        case .cmp_b:
+            compare(Int(state.registers.b))
+        case .cmp_c:
+            compare(Int(state.registers.c))
+        case .cmp_d:
+            compare(Int(state.registers.d))
+        case .cmp_e:
+            compare(Int(state.registers.e))
+        case .cmp_h:
+            compare(Int(state.registers.h))
+        case .cmp_l:
+            compare(Int(state.registers.l))
+        case .cmp_m:
+            compare(Int(memory[m_address()]))
+        case .cmp_a:
+            compare(Int(state.registers.a))
         case .rnz:
             if state.condition_bits.zero == 0 {
                 let (high, low) = try pop()
@@ -518,6 +547,13 @@ public class CPU {
             let accumulator = state.registers.a
             let port = memory[state.pc + 1]
             machineOut?(port, accumulator)
+        case .cnc:
+            if state.condition_bits.carry == 0 {
+                let returnAddress = state.pc + code.size
+                try push(high: UInt8((returnAddress >> 8) & 0xff), low: UInt8(returnAddress & 0xff))
+                state.pc = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
+                return code.cycleCount
+            }
         case .push_d:
             try push(high: state.registers.d, low: state.registers.e)
         case .sui:
@@ -623,6 +659,24 @@ public class CPU {
         state.pc += code.size
 
         return code.cycleCount
+    }
+
+    private func jump() throws {
+        // todo
+    }
+
+    private func increment(_ register: inout UInt8) {
+        // todo
+    }
+
+    private func decrement(_ register: inout UInt8) {
+        // todo
+    }
+
+    private func compare(_ value: Int) {
+        let accumulator = Int(state.registers.a)
+        state.condition_bits.carry = UInt8(accumulator < value)
+        updateZSP(accumulator - value, state: &state)
     }
 
     private func updateZSP(_ value: Int, state: inout State8080) {
