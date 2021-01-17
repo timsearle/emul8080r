@@ -405,6 +405,37 @@ public class CPU {
             updateArithmeticZSPC(Int(state.registers.a), state: &state)
         case .add_a:
             throw Error.unhandledOperation(code)
+        case .sub_b:
+            let (overflow, _) = state.registers.a.subtractingReportingOverflow(state.registers.b)
+            state.registers.a = overflow
+            updateArithmeticZSPC(Int(state.registers.a), state: &state)
+        case .sub_c:
+            let (overflow, _) = state.registers.a.subtractingReportingOverflow(state.registers.c)
+            state.registers.a = overflow
+            updateArithmeticZSPC(Int(state.registers.a), state: &state)
+        case .sub_d:
+            let (overflow, _) = state.registers.a.subtractingReportingOverflow(state.registers.d)
+            state.registers.a = overflow
+            updateArithmeticZSPC(Int(state.registers.a), state: &state)
+        case .sub_e:
+            let (overflow, _) = state.registers.a.subtractingReportingOverflow(state.registers.e)
+            state.registers.a = overflow
+            updateArithmeticZSPC(Int(state.registers.a), state: &state)
+        case .sub_h:
+            let (overflow, _) = state.registers.a.subtractingReportingOverflow(state.registers.h)
+            state.registers.a = overflow
+            updateArithmeticZSPC(Int(state.registers.a), state: &state)
+        case .sub_l:
+            let (overflow, _) = state.registers.a.subtractingReportingOverflow(state.registers.l)
+            state.registers.a = overflow
+            updateArithmeticZSPC(Int(state.registers.a), state: &state)
+        case .sub_m:
+            let (overflow, _) = state.registers.a.subtractingReportingOverflow(memory[m_address()])
+            state.registers.a = overflow
+            updateArithmeticZSPC(Int(state.registers.a), state: &state)
+        case .sub_a:
+            state.registers.a = 0
+            updateArithmeticZSPC(0, state: &state)
         case .ana_b:
             state.registers.a &= state.registers.b
             updateLogicZSPC(Int(state.registers.a), state: &state)
