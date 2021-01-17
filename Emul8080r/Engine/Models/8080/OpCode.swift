@@ -31,6 +31,7 @@ enum OpCode: UInt8, CustomStringConvertible {
     case lhld = 0x2a
     case dcx_h_l = 0x2b
     case mvi_l = 0x2e
+    case cma = 0x2f
     case lxi_sp = 0x31
     case sta = 0x32
     case dcr_m = 0x35
@@ -119,6 +120,7 @@ enum OpCode: UInt8, CustomStringConvertible {
     case ana_l = 0xa5
     case ana_m = 0xa6
     case ana_a = 0xa7
+    case xra_b = 0xa8
     case xra_a = 0xaf
     case ora_b = 0xb0
     case ora_c = 0xb1
@@ -152,9 +154,11 @@ enum OpCode: UInt8, CustomStringConvertible {
     case sbi = 0xde
     case rpo = 0xe0
     case pop_h = 0xe1
+    case xthl = 0xe3
     case push_h = 0xe5
     case ani = 0xe6
     case rpe = 0xe8
+    case pchl = 0xe9
     case xchg = 0xeb
     case rp = 0xf0
     case pop_psw = 0xf1
@@ -192,7 +196,7 @@ enum OpCode: UInt8, CustomStringConvertible {
 
     var size: Int {
         switch self {
-        case .nop, .inx_b_c, .inr_b, .dcr_b, .rlc, .dad_b_c, .ldax_b_c, .rar, .dcr_c, .rrc, .inx_d_e, .dad_d_e, .ldax_d_e, .inr_d, .dcr_d, .inx_h_l, .daa, .dcr_a, .dad_h_l, .dcx_h_l, .dcr_m, .inr_a, .stc, .mov_b_b, .mov_b_c, .mov_b_d, .mov_b_e, .mov_b_h, .mov_b_l, .mov_b_m, .mov_b_a, .mov_c_b, .mov_c_c, .mov_c_d, .mov_c_e, .mov_c_h, .mov_c_l, .mov_c_m, .mov_c_a, .mov_d_b, .mov_d_c, .mov_d_d, .mov_d_e, .mov_d_h, .mov_d_l, .mov_d_m, .mov_d_a, .mov_e_b, .mov_e_c, .mov_e_d, .mov_e_e, .mov_e_h, .mov_e_l, .mov_e_m, .mov_e_a, .mov_h_b, .mov_h_c, .mov_h_d, .mov_h_e, .mov_h_h, .mov_h_l, .mov_h_m, .mov_h_a, .mov_l_b, .mov_l_c, .mov_l_d, .mov_l_e, .mov_l_h, .mov_l_l, .mov_l_m, .mov_l_a, .mov_m_b, .mov_m_c, .mov_m_d, .mov_m_e, .mov_m_h, .mov_m_l, .mov_m_a, .mov_a_b, .mov_a_c, .mov_a_d, .mov_a_e, .mov_a_h, .mov_a_l, .mov_a_m, .mov_a_a, .add_b, .add_c, .add_d, .add_e, .add_h, .add_l, .add_m, .add_a, .ana_b, .ana_c, .ana_d, .ana_e, .ana_h, .ana_l, .ana_m, .ana_a, .xra_a, .ora_b, .ora_c, .ora_d, .ora_e, .ora_h, .ora_l, .ora_m, .ora_a, .rnz, .pop_b, .push_b, .rz, .ret, .pop_d, .push_d, .rc, .rp, .rpo, .rpe, .rm, .rnc, .pop_h, .push_h, .xchg, .pop_psw, .di, .push_psw, .ei:
+        case .nop, .inx_b_c, .inr_b, .dcr_b, .rlc, .dad_b_c, .ldax_b_c, .rar, .dcr_c, .rrc, .inx_d_e, .dad_d_e, .ldax_d_e, .inr_d, .dcr_d, .inx_h_l, .daa, .dcr_a, .dad_h_l, .dcx_h_l, .cma, .dcr_m, .inr_a, .stc, .mov_b_b, .mov_b_c, .mov_b_d, .mov_b_e, .mov_b_h, .mov_b_l, .mov_b_m, .mov_b_a, .mov_c_b, .mov_c_c, .mov_c_d, .mov_c_e, .mov_c_h, .mov_c_l, .mov_c_m, .mov_c_a, .mov_d_b, .mov_d_c, .mov_d_d, .mov_d_e, .mov_d_h, .mov_d_l, .mov_d_m, .mov_d_a, .mov_e_b, .mov_e_c, .mov_e_d, .mov_e_e, .mov_e_h, .mov_e_l, .mov_e_m, .mov_e_a, .mov_h_b, .mov_h_c, .mov_h_d, .mov_h_e, .mov_h_h, .mov_h_l, .mov_h_m, .mov_h_a, .mov_l_b, .mov_l_c, .mov_l_d, .mov_l_e, .mov_l_h, .mov_l_l, .mov_l_m, .mov_l_a, .mov_m_b, .mov_m_c, .mov_m_d, .mov_m_e, .mov_m_h, .mov_m_l, .mov_m_a, .mov_a_b, .mov_a_c, .mov_a_d, .mov_a_e, .mov_a_h, .mov_a_l, .mov_a_m, .mov_a_a, .add_b, .add_c, .add_d, .add_e, .add_h, .add_l, .add_m, .add_a, .ana_b, .ana_c, .ana_d, .ana_e, .ana_h, .ana_l, .ana_m, .ana_a, .xra_b, .xra_a, .ora_b, .ora_c, .ora_d, .ora_e, .ora_h, .ora_l, .ora_m, .ora_a, .rnz, .pop_b, .push_b, .rz, .ret, .pop_d, .push_d, .rc, .rp, .rpo, .rpe, .rm, .rnc, .pop_h, .xthl, .push_h, .pchl, .xchg, .pop_psw, .di, .push_psw, .ei:
             return 1
         case .mvi_b, .mvi_c, .mvi_d, .mvi_e, .mvi_h, .mvi_l, .mvi_m, .mvi_a, .sui, .adi, .out, .in, .sbi, .ani, .ori, .cpi:
             return 2
@@ -265,6 +269,8 @@ enum OpCode: UInt8, CustomStringConvertible {
             return "DCX H L"
         case .mvi_l:
             return "MVI L,#"
+        case .cma:
+            return "CMA"
         case .sta:
             return "STA"
         case .dcr_m:
@@ -439,6 +445,8 @@ enum OpCode: UInt8, CustomStringConvertible {
             return "ANA M"
         case .ana_a:
             return "ANA A"
+        case .xra_b:
+            return "XRA B"
         case .xra_a:
             return "XRA A"
         case .ora_b:
@@ -501,6 +509,8 @@ enum OpCode: UInt8, CustomStringConvertible {
             return "SUB #"
         case .pop_h:
             return "POP H"
+        case .xthl:
+            return "XTHL"
         case .push_h:
             return "PUSH H"
         case .ani:
@@ -521,6 +531,8 @@ enum OpCode: UInt8, CustomStringConvertible {
             return "RET PO"
         case .rpe:
             return "RET PE"
+        case .pchl:
+            return "PCHL"
         case .rp:
             return "RET P"
         case .rm:

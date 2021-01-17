@@ -169,6 +169,8 @@ public class CPU {
             state.registers.a = memory[Int(address, radix: 16)!]
         case .mvi_e:
             state.registers.e = memory[state.pc + 1]
+        case .cma:
+            state.registers.a ^= 0xff
         case .rar:
             let accumulator = state.registers.a >> 1
             let value = accumulator | (state.condition_bits.carry << 7)
@@ -391,21 +393,31 @@ public class CPU {
         case .add_a:
             throw Error.unhandledOperation(code)
         case .ana_b:
-            throw Error.unhandledOperation(code)
+            state.registers.a &= state.registers.b
+            updateLogicZSPC(Int(state.registers.a), state: &state)
         case .ana_c:
-            throw Error.unhandledOperation(code)
+            state.registers.a &= state.registers.c
+            updateLogicZSPC(Int(state.registers.a), state: &state)
         case .ana_d:
-            throw Error.unhandledOperation(code)
+            state.registers.a &= state.registers.d
+            updateLogicZSPC(Int(state.registers.a), state: &state)
         case .ana_e:
-            throw Error.unhandledOperation(code)
+            state.registers.a &= state.registers.e
+            updateLogicZSPC(Int(state.registers.a), state: &state)
         case .ana_h:
-            throw Error.unhandledOperation(code)
+            state.registers.a &= state.registers.h
+            updateLogicZSPC(Int(state.registers.a), state: &state)
         case .ana_l:
-            throw Error.unhandledOperation(code)
+            state.registers.a &= state.registers.l
+            updateLogicZSPC(Int(state.registers.a), state: &state)
         case .ana_m:
-            throw Error.unhandledOperation(code)
+            state.registers.a &= memory[m_address()]
+            updateLogicZSPC(Int(state.registers.a), state: &state)
         case .ana_a:
             state.registers.a &= state.registers.a
+            updateLogicZSPC(Int(state.registers.a), state: &state)
+        case .xra_b:
+            state.registers.a ^= state.registers.b
             updateLogicZSPC(Int(state.registers.a), state: &state)
         case .xra_a:
             state.registers.a ^= state.registers.a
@@ -522,6 +534,9 @@ public class CPU {
             throw Error.unhandledOperation(code)
         case .rpe:
             throw Error.unhandledOperation(code)
+        case .pchl:
+            state.pc = m_address()
+            return code.cycleCount
         case .rnc:
             if state.condition_bits.carry == 0 {
                 let (high, low) = try pop()
@@ -547,6 +562,17 @@ public class CPU {
             let (high, low) = try pop()
             state.registers.h = high
             state.registers.l = low
+        case .xthl:
+            let l = state.registers.l
+            let h = state.registers.h
+            let sp_0 = memory[state.sp]
+            let sp_1 = memory[state.sp + 1]
+
+            state.registers.l = sp_0
+            state.registers.h = sp_1
+
+            try write(l, at: state.sp)
+            try write(h, at: state.sp + 1)
         case .push_h:
             try push(high: state.registers.h, low: state.registers.l)
         case .ani:
