@@ -48,8 +48,12 @@ public final class InvaderMachine {
                 do {
                     try self.cpu.start()
                 } catch {
-                    UserDefaults.standard.setValue(try! JSONEncoder().encode(self.captureState()), forKey: "PreviousState")
                     print(error)
+                    if case CPU.Error.unhandledOperation = error {
+                        print("Caching...")
+                        UserDefaults.standard.setValue(try! JSONEncoder().encode(self.captureState()), forKey: "PreviousState")
+                        print("Done")
+                    }
                     break
                 }
             }
