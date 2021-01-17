@@ -508,8 +508,7 @@ public class CPU {
             compare(Int(state.registers.a))
         case .rnz:
             if state.condition_bits.zero == 0 {
-                let (high, low) = try pop()
-                state.pc = Int("\(high.hex)\(low.hex)", radix: 16)!
+                try ret()
                 return code.cycleCount
             }
         case .pop_b:
@@ -540,13 +539,11 @@ public class CPU {
             updateArithmeticZSPC(Int(state.registers.a), state: &state)
         case .rz:
             if state.condition_bits.zero == 1 {
-                let (high, low) = try pop()
-                state.pc = Int("\(high.hex)\(low.hex)", radix: 16)!
+                try ret()
                 return code.cycleCount
             }
         case .ret:
-            let (high, low) = try pop()
-            state.pc = Int("\(high.hex)\(low.hex)", radix: 16)!
+            try ret()
             return code.cycleCount
         case .jz:
             if state.condition_bits.zero == 1 {
@@ -593,8 +590,7 @@ public class CPU {
             updateArithmeticZSPC(Int(state.registers.a), state: &state)
         case .rc:
             if state.condition_bits.carry == 1 {
-                let (high, low) = try pop()
-                state.pc = Int("\(high.hex)\(low.hex)", radix: 16)!
+                try ret()
                 return code.cycleCount
             }
         case .rp:
@@ -606,8 +602,7 @@ public class CPU {
             return code.cycleCount
         case .rnc:
             if state.condition_bits.carry == 0 {
-                let (high, low) = try pop()
-                state.pc = Int("\(high.hex)\(low.hex)", radix: 16)!
+                try ret()
                 return code.cycleCount
             }
         case .rpo:
@@ -668,8 +663,7 @@ public class CPU {
             state.registers.a |= memory[state.pc + 1]
         case .rm:
             if state.condition_bits.sign == 1 {
-                let (high, low) = try pop()
-                state.pc = Int("\(high.hex)\(low.hex)", radix: 16)!
+                try ret()
                 return code.cycleCount
             }
         case .jm:
@@ -691,6 +685,15 @@ public class CPU {
 
     private func jump()  {
         state.pc = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
+    }
+
+    private func ret() throws {
+        let (high, low) = try pop()
+        state.pc = Int("\(high.hex)\(low.hex)", radix: 16)!
+    }
+
+    private func call() {
+
     }
 
     private func increment(_ register: inout UInt8) {
