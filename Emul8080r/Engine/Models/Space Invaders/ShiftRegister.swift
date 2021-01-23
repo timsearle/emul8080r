@@ -39,7 +39,7 @@ public final class ShiftRegister: Codable {
 
         switch(port) {
         case 3:
-            let v = UInt16((shiftX<<8) | shiftY)
+            let v = UInt16(shiftX) << 8 | UInt16(shiftY)
             let shift = 8 - shift_offset
             a = UInt8(truncatingIfNeeded: (v >> shift) & 0xff)
         default:

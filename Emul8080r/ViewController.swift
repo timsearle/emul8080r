@@ -47,11 +47,11 @@ class ViewController: UIViewController {
 
     //MARK: Machine controls
     @IBAction func leftDown(_ sender: Any) {
-        spaceInvaders.fire(state: .down)
+        spaceInvaders.left(state: .down)
     }
 
     @IBAction func leftUp(_ sender: Any) {
-        spaceInvaders.fire(state: .up)
+        spaceInvaders.left(state: .up)
     }
 
     @IBAction func rightDown(_ sender: Any) {
@@ -75,7 +75,7 @@ class ViewController: UIViewController {
     }
 
     @IBAction func coinUp(_ sender: Any) {
- //       spaceInvaders.coin(state: .up)
+        spaceInvaders.coin(state: .up)
     }
 
     @IBAction func playerOneDown(_ sender: Any) {

@@ -181,7 +181,24 @@ public class CPU {
             let (result, _) = value.addingReportingOverflow(1)
             write(result, pair: .hl)
         case .daa:
-            throw Error.unhandledOperation(code)
+            let lsb4 = state.registers.a & 0xf
+
+            if  lsb4 > 9 || state.condition_bits.aux_carry == 0x01 {
+                let (result, overflow) = state.registers.a.addingReportingOverflow(6)
+                updateArithmeticZSPC(Int(result), overflow: overflow)
+                if overflow {
+                    state.condition_bits.aux_carry = 0x01
+                } else {
+                    state.condition_bits.aux_carry = 0x00
+                }
+            }
+
+            let msb4 = state.registers.a & 0xf0
+
+            if msb4 > 0x90 || state.condition_bits.carry == 0x01 {
+                let (result, overflow) = state.registers.a.addingReportingOverflow(0x60)
+                updateArithmeticZSPC(Int(result), overflow: overflow)
+            }
         case .mvi_h:
             state.registers.h = memory[state.pc + 1]
         case .dad_h_l:
@@ -580,9 +597,8 @@ public class CPU {
                 return code.cycleCount
             }
         case .in:
-            break
-            //let device = memory[state.pc + 1]
-            //state.registers.a = machineIn?(device) ?? state.registers.a
+            let device = memory[state.pc + 1]
+            state.registers.a = machineIn?(device) ?? state.registers.a
         case .sbi:
             let data = memory[state.pc + 1] + state.condition_bits.carry
             let (result, overflow) = state.registers.a.subtractingReportingOverflow(data)

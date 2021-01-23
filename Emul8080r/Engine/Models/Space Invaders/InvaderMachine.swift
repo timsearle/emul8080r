@@ -16,7 +16,7 @@ public final class InvaderMachine {
     private let cpu: CPU
     private let shiftRegister = ShiftRegister()
 
-    private var inputPorts: [UInt8] = [0b00001110, 0b00001000, 0, 0]
+    private var inputPorts: [UInt8] = [0b00001110, 0, 0, 0]
 
     private func captureState() -> SaveState {
         return SaveState(memory: cpu.memory, inputPorts: inputPorts, state: cpu.state, register: shiftRegister)
@@ -63,27 +63,27 @@ public final class InvaderMachine {
     public func fire(state: ButtonState) {
         switch state {
         case .down:
-            inputPorts[0] |= 0x10
+            inputPorts[1] |= 0x10
         case .up:
-            inputPorts[0] &= 0xef
+            inputPorts[1] &= ~0x10
         }
     }
 
     public func left(state: ButtonState) {
         switch state {
         case .down:
-            inputPorts[0] |= 0x20
+            inputPorts[1] |= 0x20
         case .up:
-            inputPorts[0] &= 0xdf
+            inputPorts[1] &= ~0x20
         }
     }
 
     public func right(state: ButtonState) {
         switch state {
         case .down:
-            inputPorts[0] |= 0x40
+            inputPorts[1] |= 0x40
         case .up:
-            inputPorts[0] &= 0xbf
+            inputPorts[1] &= ~0x40
         }
     }
 
@@ -106,8 +106,11 @@ public final class InvaderMachine {
     }
 
     private func machineIn(_ port: UInt8) -> UInt8 {
-        //print("IN: \(port)")
+        //print("READING CONTROLS \(port): \(String(inputPorts[Int(port)], radix: 2))")
+
         switch port {
+        case 1:
+            return inputPorts[Int(port)]
         case 3:
             return shiftRegister.in(port: port)
         default:
