@@ -516,9 +516,7 @@ public class CPU {
             return code.cycleCount
         case .cnz:
             if state.condition_bits.zero == 0 {
-                let returnAddress = state.pc + code.size
-                try push(high: UInt8((returnAddress >> 8) & 0xff), low: UInt8(returnAddress & 0xff))
-                state.pc = Int(addressRegisterPair(memory[state.pc + 2], memory[state.pc + 1]))
+                try call()
                 return code.cycleCount
             }
         case .push_b:
@@ -543,15 +541,11 @@ public class CPU {
             }
         case .cz:
             if state.condition_bits.zero == 1 {
-                let returnAddress = state.pc + code.size
-                try push(high: UInt8((returnAddress >> 8) & 0xff), low: UInt8(returnAddress & 0xff))
-                state.pc = Int(addressRegisterPair(memory[state.pc + 2], memory[state.pc + 1]))
+                try call()
                 return code.cycleCount
             }
         case .call:
-            let returnAddress = state.pc + code.size
-            try push(high: UInt8((returnAddress >> 8) & 0xff), low: UInt8(returnAddress & 0xff))
-            state.pc = Int(addressRegisterPair(memory[state.pc + 2], memory[state.pc + 1]))
+            try call()
             return code.cycleCount
         case .pop_d:
             let (high, low) = try pop()
@@ -568,9 +562,7 @@ public class CPU {
             machineOut?(port, accumulator)
         case .cnc:
             if state.condition_bits.carry == 0 {
-                let returnAddress = state.pc + code.size
-                try push(high: UInt8((returnAddress >> 8) & 0xff), low: UInt8(returnAddress & 0xff))
-                state.pc = Int(addressRegisterPair(memory[state.pc + 2], memory[state.pc + 1]))
+                try call()
                 return code.cycleCount
             }
         case .push_d:
@@ -683,8 +675,10 @@ public class CPU {
         state.pc = Int(addressRegisterPair(high, low))
     }
 
-    private func call() {
-        // todo
+    private func call() throws {
+        let returnAddress = state.pc + 3
+        try push(high: UInt8((returnAddress >> 8) & 0xff), low: UInt8(returnAddress & 0xff))
+        state.pc = Int(addressRegisterPair(memory[state.pc + 2], memory[state.pc + 1]))
     }
 
     private func increment(_ register: inout UInt8) -> UInt8 {
