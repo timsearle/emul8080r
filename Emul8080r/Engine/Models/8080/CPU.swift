@@ -97,7 +97,7 @@ public class CPU {
             state.registers.c = memory[state.pc + 1]
             state.registers.b = memory[state.pc + 2]
         case .inx_b_c:
-            var value = Int("\(state.registers.b.hex)\(state.registers.c.hex)", radix: 16)!
+            var value = addressRegisterPair(state.registers.b, state.registers.c)
             value += 1
             state.registers.b = UInt8((value >> 8) & 0xff)
             state.registers.c = UInt8(value & 0xff)
@@ -114,8 +114,8 @@ public class CPU {
             state.registers.a = ((value & 0x80) >> 7) | value << 1
             state.condition_bits.carry = UInt8((value & 0x80) == 0x80)
         case .dad_b_c:
-            let bc = Int("\(state.registers.b.hex)\(state.registers.c.hex)", radix: 16)!
-            let hl = Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)!
+            let bc = Int(addressRegisterPair(state.registers.b, state.registers.c))
+            let hl = Int(addressRegisterPair(state.registers.h, state.registers.l))
 
             let result = bc + hl
 
@@ -123,8 +123,8 @@ public class CPU {
             state.registers.l = UInt8(result & 0xff)
             state.condition_bits.carry = UInt8((result & 0xffff0000) > 0)
         case .ldax_b_c:
-            let address = "\(state.registers.b.hex)\(state.registers.c.hex)"
-            state.registers.a = memory[Int(address, radix: 16)!]
+            let address = Int(addressRegisterPair(state.registers.b, state.registers.c))
+            state.registers.a = memory[address]
         case .inr_c:
             let result = increment(&state.registers.c)
             updateZSP(Int(result))
@@ -141,7 +141,7 @@ public class CPU {
             state.registers.e = memory[state.pc + 1]
             state.registers.d = memory[state.pc + 2]
         case .inx_d_e:
-            var value = Int("\(state.registers.d.hex)\(state.registers.e.hex)", radix: 16)!
+            var value = Int(addressRegisterPair(state.registers.d, state.registers.e))
             value += 1
             state.registers.d = UInt8((value >> 8) & 0xff)
             state.registers.e = UInt8(value & 0xff)
@@ -154,8 +154,8 @@ public class CPU {
         case .mvi_d:
             state.registers.d = memory[state.pc + 1]
         case .dad_d_e:
-            let de = Int("\(state.registers.d.hex)\(state.registers.e.hex)", radix: 16)!
-            let hl = Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)!
+            let de = Int(addressRegisterPair(state.registers.d, state.registers.e))
+            let hl = Int(addressRegisterPair(state.registers.h, state.registers.l))
 
             let result = de + hl
 
@@ -163,8 +163,8 @@ public class CPU {
             state.registers.l = UInt8(result & 0xff)
             state.condition_bits.carry = UInt8((result & 0xffff0000) > 0)
         case .ldax_d_e:
-            let address = "\(state.registers.d.hex)\(state.registers.e.hex)"
-            state.registers.a = memory[Int(address, radix: 16)!]
+            let address = Int(addressRegisterPair(state.registers.d, state.registers.e))
+            state.registers.a = memory[address]
         case .mvi_e:
             state.registers.e = memory[state.pc + 1]
         case .cma:
@@ -178,11 +178,11 @@ public class CPU {
             state.registers.l = memory[state.pc + 1]
             state.registers.h = memory[state.pc + 2]
         case .shld:
-            let address = Int(memory[state.pc + 2].hex + memory[state.pc + 1].hex, radix: 16)!
+            let address = Int(addressRegisterPair(memory[state.pc + 2], memory[state.pc + 1]))
             try write(state.registers.l, at: address)
             try write(state.registers.h, at: address + 1)
         case .inx_h_l:
-            var value = Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)!
+            var value = Int(addressRegisterPair(state.registers.h, state.registers.l))
             value += 1
             state.registers.h = UInt8((value >> 8) & 0xff)
             state.registers.l = UInt8(value & 0xff)
@@ -191,16 +191,16 @@ public class CPU {
         case .mvi_h:
             state.registers.h = memory[state.pc + 1]
         case .dad_h_l:
-            let result = Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)! * 2
+            let result = Int(addressRegisterPair(state.registers.h, state.registers.l)) * 2
             state.registers.h = UInt8((result & 0xff00) >> 8)
             state.registers.l = UInt8(result & 0xff)
             state.condition_bits.carry = UInt8((result & 0xffff0000) > 0)
         case .lhld:
-            let address = Int(memory[state.pc + 2].hex + memory[state.pc + 1].hex, radix: 16)!
+            let address = Int(addressRegisterPair(memory[state.pc + 2], memory[state.pc + 1]))
             state.registers.l = memory[address]
             state.registers.h = memory[address + 1]
         case .dcx_h_l:
-            var value = Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)!
+            var value = Int(addressRegisterPair(state.registers.h, state.registers.l))
             value -= 1
             state.registers.h = UInt8((value >> 8) & 0xff)
             state.registers.l = UInt8(value & 0xff)
@@ -684,7 +684,7 @@ public class CPU {
     }
 
     private func call() {
-
+        // todo
     }
 
     private func increment(_ register: inout UInt8) -> UInt8 {
@@ -744,17 +744,19 @@ public class CPU {
         return (high, low)
     }
 
+    private func addressRegisterPair(_ high: UInt8, _ low: UInt8) -> UInt16 {
+        return UInt16(high) << 8 | UInt16(low)
+    }
+
     private func m_address() -> Int {
-        return Int("\(state.registers.h.hex)\(state.registers.l.hex)", radix: 16)!
+        return Int(addressRegisterPair(state.registers.h, state.registers.l))
     }
 
     private func write(_ value: UInt8, at address: Int) throws {
-        // validate not writing to ROM
         guard address >= 0x2000 else {
             throw Error.cannotWriteToROM(address)
         }
 
-        // outside of space invaders RAM
         guard address < 0x4000 else {
             throw Error.cannotWriteOutsideExpectedRAM(address)
         }
