@@ -2,9 +2,11 @@ import Foundation
 
 public class CPU {
     enum RegisterPair {
-        case bc
-        case de
-        case hl
+        case bc, de, hl
+    }
+
+    enum Register {
+        case b, c, d, e, h, l, m, a
     }
 
     enum Error: Swift.Error {
@@ -106,11 +108,9 @@ public class CPU {
             let (result, _) = value.addingReportingOverflow(1)
             write(result, pair: .bc)
         case .inr_b:
-            let result = increment(&state.registers.b)
-            updateZSP(Int(result))
+            try increment(.b)
         case .dcr_b:
-            let result = decrement(&state.registers.b)
-            updateZSP(Int(result))
+            try decrement(.b)
         case .mvi_b:
             state.registers.b = memory[state.pc + 1]
         case .rlc:
@@ -129,11 +129,9 @@ public class CPU {
             let address = Int(addressRegisterPair(state.registers.b, state.registers.c))
             state.registers.a = memory[address]
         case .inr_c:
-            let result = increment(&state.registers.c)
-            updateZSP(Int(result))
+            try increment(.c)
         case .dcr_c:
-            let result = decrement(&state.registers.c)
-            updateZSP(Int(result))
+            try decrement(.c)
         case .mvi_c:
             state.registers.c = memory[state.pc + 1]
         case .rrc:
@@ -147,11 +145,9 @@ public class CPU {
             let (result, _) = value.addingReportingOverflow(1)
             write(result, pair: .de)
         case .inr_d:
-            let result = increment(&state.registers.d)
-            updateZSP(Int(result))
+            try increment(.d)
         case .dcr_d:
-            let result = decrement(&state.registers.d)
-            updateZSP(Int(result))
+            try decrement(.d)
         case .mvi_d:
             state.registers.d = memory[state.pc + 1]
         case .dad_d_e:
@@ -203,8 +199,7 @@ public class CPU {
             let (result, _) = value.subtractingReportingOverflow(1)
             write(result, pair: .hl)
         case .inr_l:
-            let result = increment(&state.registers.l)
-            updateZSP(Int(result))
+            try increment(.l)
         case .mvi_l:
             state.registers.l = memory[state.pc + 1]
         case .lxi_sp:
@@ -213,15 +208,12 @@ public class CPU {
             let address =  Int(addressRegisterPair(memory[state.pc + 2], memory[state.pc + 1]))
             try write(state.registers.a, at: address)
         case .inr_m:
-            let value = memory[m_address()]
-            let (overflow, _) = value.addingReportingOverflow(1)
-            try write(overflow, at: m_address())
-            updateZSP(Int(overflow))
+            try increment(.m)
         case .dcr_m:
             let offset = m_address()
-            let (overflow, _) = UInt8(memory[offset]).subtractingReportingOverflow(1)
-            try write(overflow, at: offset)
-            updateZSP(Int(overflow))
+            let (result, _) = UInt8(memory[offset]).subtractingReportingOverflow(1)
+            try write(result, at: offset)
+            updateZSP(Int(result))
         case .mvi_m:
             try write(memory[state.pc + 1], at: m_address())
         case .stc:
@@ -230,11 +222,9 @@ public class CPU {
             let address = Int(addressRegisterPair(memory[state.pc + 2], memory[state.pc + 1]))
             state.registers.a = memory[address]
         case .inr_a:
-            let result = increment(&state.registers.a)
-            updateZSP(Int(result))
+            try increment(.a)
         case .dcr_a:
-            let result = decrement(&state.registers.a)
-            updateZSP(Int(result))
+            try decrement(.a)
         case .mvi_a:
             state.registers.a = memory[state.pc + 1]
         case .mov_b_b:
@@ -619,7 +609,6 @@ public class CPU {
             try push(high: state.registers.h, low: state.registers.l)
         case .ani:
             state.registers.a = state.registers.a & memory[state.pc + 1]
-            state.condition_bits.carry = 0
             updateLogicZSPC(Int(state.registers.a))
         case .xchg:
             let h = state.registers.h
@@ -662,7 +651,12 @@ public class CPU {
 
         return code.cycleCount
     }
+}
 
+// MARK: Instruction Helpers
+extension CPU {
+
+    // MARK: Control Flow
     private func jump()  {
         state.pc = Int(addressRegisterPair(memory[state.pc + 2], memory[state.pc + 1]))
     }
@@ -678,49 +672,84 @@ public class CPU {
         jump()
     }
 
-    private func increment(_ register: inout UInt8) -> UInt8 {
-        let (overflow, _) = register.addingReportingOverflow(1)
-        register = overflow
-        return overflow
+    // MARK: Arithmetic
+    private func increment(_ register: Register) throws {
+        let result: UInt8
+
+        switch register {
+        case .b:
+            (result, _) = state.registers.b.addingReportingOverflow(1)
+            state.registers.b = result
+        case .c:
+            (result, _) = state.registers.c.addingReportingOverflow(1)
+            state.registers.c = result
+        case .d:
+            (result, _) = state.registers.d.addingReportingOverflow(1)
+            state.registers.d = result
+        case .e:
+            (result, _) = state.registers.e.addingReportingOverflow(1)
+            state.registers.e = result
+        case .h:
+            (result, _) = state.registers.h.addingReportingOverflow(1)
+            state.registers.h = result
+        case .l:
+            (result, _) = state.registers.l.addingReportingOverflow(1)
+            state.registers.l = result
+        case .m:
+            let address = m_address()
+            let value = memory[address]
+            (result, _) = value.addingReportingOverflow(1)
+            try write(result, at: address)
+        case .a:
+            (result, _) = state.registers.a.addingReportingOverflow(1)
+            state.registers.a = result
+        }
+
+        updateZSP(Int(result))
     }
 
-    private func decrement(_ register: inout UInt8) -> UInt8 {
-        let (overflow, _) = register.subtractingReportingOverflow(1)
-        register = overflow
-        return overflow
+    private func decrement(_ register: Register) throws {
+        let result: UInt8
+
+        switch register {
+        case .b:
+            (result, _) = state.registers.b.subtractingReportingOverflow(1)
+            state.registers.b = result
+        case .c:
+            (result, _) = state.registers.c.subtractingReportingOverflow(1)
+            state.registers.c = result
+        case .d:
+            (result, _) = state.registers.d.subtractingReportingOverflow(1)
+            state.registers.d = result
+        case .e:
+            (result, _) = state.registers.e.subtractingReportingOverflow(1)
+            state.registers.e = result
+        case .h:
+            (result, _) = state.registers.h.subtractingReportingOverflow(1)
+            state.registers.h = result
+        case .l:
+            (result, _) = state.registers.l.subtractingReportingOverflow(1)
+            state.registers.l = result
+        case .m:
+            let address = m_address()
+            let value = memory[address]
+            (result, _) = value.subtractingReportingOverflow(1)
+            try write(result, at: address)
+        case .a:
+            (result, _) = state.registers.a.subtractingReportingOverflow(1)
+            state.registers.a = result
+        }
+
+        updateZSP(Int(result))
     }
 
     private func compare(_ value: Int) {
         let accumulator = Int(state.registers.a)
-        state.condition_bits.carry = UInt8(accumulator < value)
+        state.condition_bits.carry = UInt8(value > accumulator)
         updateZSP(accumulator - value)
     }
 
-    private func updateZSP(_ value: Int) {
-        state.condition_bits.zero = UInt8((value & 0xff) == 0)
-        state.condition_bits.sign = UInt8(0x80 == (value & 0x80))
-        state.condition_bits.parity = parity(value & 0xff)
-    }
-
-    private func updateArithmeticZSPC(_ value: Int, overflow: Bool) {
-        state.condition_bits.zero = UInt8((value & 0xff) == 0)
-        state.condition_bits.sign = UInt8(0x80 == (value & 0x80))
-        state.condition_bits.parity = parity(value & 0xff)
-        state.condition_bits.carry = UInt8(overflow)
-    }
-
-    private func updateLogicZSPC(_ value: Int) {
-        state.condition_bits.zero = UInt8((value & 0xff) == 0)
-        state.condition_bits.sign = UInt8(0x80 == (value & 0x80))
-        state.condition_bits.parity = parity(value & 0xff)
-        state.condition_bits.carry = 0
-    }
-
-    private func parity(_ value: Int) -> UInt8 {
-        let binary = String(value, radix: 2)
-        return UInt8(binary.filter { $0 == "1" }.count % 2 == 0)
-    }
-
+    // MARK: Stack
     private func push(high: UInt8, low: UInt8) throws {
         try write(high, at: state.sp - 1)
         try write(low, at: state.sp - 2)
@@ -735,14 +764,7 @@ public class CPU {
         return (high, low)
     }
 
-    private func addressRegisterPair(_ high: UInt8, _ low: UInt8) -> UInt16 {
-        return UInt16(high) << 8 | UInt16(low)
-    }
-
-    private func m_address() -> Int {
-        return Int(addressRegisterPair(state.registers.h, state.registers.l))
-    }
-
+    // MARK: Mutating Memory
     private func write(_ value: UInt16, pair: RegisterPair) {
         let highValue = UInt8(value >> 8)
         let lowValue = UInt8(value & 0xff)
@@ -774,5 +796,40 @@ public class CPU {
         }
 
         memory[address] = value
+    }
+
+    // MARK: Addressing
+    private func addressRegisterPair(_ high: UInt8, _ low: UInt8) -> UInt16 {
+        return UInt16(high) << 8 | UInt16(low)
+    }
+
+    private func m_address() -> Int {
+        return Int(addressRegisterPair(state.registers.h, state.registers.l))
+    }
+
+    // MARK: Condition Bits
+    private func updateZSP(_ value: Int) {
+        state.condition_bits.zero = UInt8((value & 0xff) == 0)
+        state.condition_bits.sign = UInt8(0x80 == (value & 0x80))
+        state.condition_bits.parity = parity(value & 0xff)
+    }
+
+    private func updateArithmeticZSPC(_ value: Int, overflow: Bool) {
+        state.condition_bits.zero = UInt8((value & 0xff) == 0)
+        state.condition_bits.sign = UInt8(0x80 == (value & 0x80))
+        state.condition_bits.parity = parity(value & 0xff)
+        state.condition_bits.carry = UInt8(overflow)
+    }
+
+    private func updateLogicZSPC(_ value: Int) {
+        state.condition_bits.zero = UInt8((value & 0xff) == 0)
+        state.condition_bits.sign = UInt8(0x80 == (value & 0x80))
+        state.condition_bits.parity = parity(value & 0xff)
+        state.condition_bits.carry = 0
+    }
+
+    private func parity(_ value: Int) -> UInt8 {
+        let binary = String(value, radix: 2)
+        return UInt8(binary.filter { $0 == "1" }.count % 2 == 0)
     }
 }
