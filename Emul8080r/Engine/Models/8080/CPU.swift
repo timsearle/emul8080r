@@ -1,6 +1,12 @@
 import Foundation
 
 public class CPU {
+    enum RegisterPair {
+        case bc
+        case de
+        case hl
+    }
+
     enum Error: Swift.Error {
         case unhandledOperation(OpCode)
         case cannotWriteToROM(Int)
@@ -99,8 +105,7 @@ public class CPU {
         case .inx_b_c:
             var value = addressRegisterPair(state.registers.b, state.registers.c)
             value += 1
-            state.registers.b = UInt8((value >> 8) & 0xff)
-            state.registers.c = UInt8(value & 0xff)
+            write(value, pair: .bc)
         case .inr_b:
             let result = increment(&state.registers.b)
             updateZSP(Int(result))
@@ -141,10 +146,9 @@ public class CPU {
             state.registers.e = memory[state.pc + 1]
             state.registers.d = memory[state.pc + 2]
         case .inx_d_e:
-            var value = Int(addressRegisterPair(state.registers.d, state.registers.e))
+            var value = addressRegisterPair(state.registers.d, state.registers.e)
             value += 1
-            state.registers.d = UInt8((value >> 8) & 0xff)
-            state.registers.e = UInt8(value & 0xff)
+            write(value, pair: .de)
         case .inr_d:
             let result = increment(&state.registers.d)
             updateZSP(Int(result))
@@ -182,10 +186,9 @@ public class CPU {
             try write(state.registers.l, at: address)
             try write(state.registers.h, at: address + 1)
         case .inx_h_l:
-            var value = Int(addressRegisterPair(state.registers.h, state.registers.l))
+            var value = addressRegisterPair(state.registers.h, state.registers.l)
             value += 1
-            state.registers.h = UInt8((value >> 8) & 0xff)
-            state.registers.l = UInt8(value & 0xff)
+            write(value, pair: .hl)
         case .daa:
             throw Error.unhandledOperation(code)
         case .mvi_h:
@@ -678,7 +681,7 @@ public class CPU {
     private func call() throws {
         let returnAddress = state.pc + 3
         try push(high: UInt8((returnAddress >> 8) & 0xff), low: UInt8(returnAddress & 0xff))
-        state.pc = Int(addressRegisterPair(memory[state.pc + 2], memory[state.pc + 1]))
+        jump()
     }
 
     private func increment(_ register: inout UInt8) -> UInt8 {
@@ -744,6 +747,23 @@ public class CPU {
 
     private func m_address() -> Int {
         return Int(addressRegisterPair(state.registers.h, state.registers.l))
+    }
+
+    private func write(_ value: UInt16, pair: RegisterPair) {
+        let highValue = UInt8(value >> 8)
+        let lowValue = UInt8(value & 0xff)
+
+        switch pair {
+        case .bc:
+            state.registers.b = highValue
+            state.registers.c = lowValue
+        case .de:
+            state.registers.d = highValue
+            state.registers.e = lowValue
+        case .hl:
+            state.registers.h = highValue
+            state.registers.l = lowValue
+        }
     }
 
     private func write(_ value: UInt8, at address: Int) throws {
