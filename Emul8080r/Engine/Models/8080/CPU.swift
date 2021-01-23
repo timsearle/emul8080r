@@ -168,7 +168,7 @@ public class CPU {
         case .mvi_e:
             state.registers.e = memory[state.pc + 1]
         case .cma:
-            state.registers.a ^= 0xff
+            state.registers.a = ~state.registers.a
         case .rar:
             let accumulator = state.registers.a >> 1
             let value = accumulator | (state.condition_bits.carry << 7)
