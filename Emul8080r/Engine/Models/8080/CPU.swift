@@ -102,9 +102,9 @@ public class CPU {
         case .lxi_b_c:
             writeImmediate(to: .bc)
         case .inx_b_c:
-            var value = addressRegisterPair(state.registers.b, state.registers.c)
-            value += 1
-            write(value, pair: .bc)
+            let value = addressRegisterPair(state.registers.b, state.registers.c)
+            let (result, _) = value.addingReportingOverflow(1)
+            write(result, pair: .bc)
         case .inr_b:
             let result = increment(&state.registers.b)
             updateZSP(Int(result))
@@ -143,9 +143,9 @@ public class CPU {
         case .lxi_d_e:
             writeImmediate(to: .de)
         case .inx_d_e:
-            var value = addressRegisterPair(state.registers.d, state.registers.e)
-            value += 1
-            write(value, pair: .de)
+            let value = addressRegisterPair(state.registers.d, state.registers.e)
+            let (result, _) = value.addingReportingOverflow(1)
+            write(result, pair: .de)
         case .inr_d:
             let result = increment(&state.registers.d)
             updateZSP(Int(result))
@@ -181,9 +181,9 @@ public class CPU {
             try write(state.registers.l, at: address)
             try write(state.registers.h, at: address + 1)
         case .inx_h_l:
-            var value = addressRegisterPair(state.registers.h, state.registers.l)
-            value += 1
-            write(value, pair: .hl)
+            let value = addressRegisterPair(state.registers.h, state.registers.l)
+            let (result, _) = value.addingReportingOverflow(1)
+            write(result, pair: .hl)
         case .daa:
             throw Error.unhandledOperation(code)
         case .mvi_h:
@@ -199,10 +199,9 @@ public class CPU {
             state.registers.l = memory[address]
             state.registers.h = memory[address + 1]
         case .dcx_h_l:
-            var value = Int(addressRegisterPair(state.registers.h, state.registers.l))
-            value -= 1
-            state.registers.h = UInt8((value >> 8) & 0xff)
-            state.registers.l = UInt8(value & 0xff)
+            let value = addressRegisterPair(state.registers.h, state.registers.l)
+            let (result, _) = value.subtractingReportingOverflow(1)
+            write(result, pair: .hl)
         case .inr_l:
             let result = increment(&state.registers.l)
             updateZSP(Int(result))
@@ -365,67 +364,67 @@ public class CPU {
         case .mov_a_a:
             break
         case .add_b:
-            let (result, _) = state.registers.a.addingReportingOverflow(state.registers.b)
+            let (result, overflow) = state.registers.a.addingReportingOverflow(state.registers.b)
             state.registers.a = result
-            updateArithmeticZSPC(Int(state.registers.a))
+            updateArithmeticZSPC(Int(state.registers.a), overflow: overflow)
         case .add_c:
-            let (result, _) = state.registers.a.addingReportingOverflow(state.registers.c)
+            let (result, overflow) = state.registers.a.addingReportingOverflow(state.registers.c)
             state.registers.a = result
-            updateArithmeticZSPC(Int(state.registers.a))
+            updateArithmeticZSPC(Int(state.registers.a), overflow: overflow)
         case .add_d:
-            let (result, _) = state.registers.a.addingReportingOverflow(state.registers.d)
+            let (result, overflow) = state.registers.a.addingReportingOverflow(state.registers.d)
             state.registers.a = result
-            updateArithmeticZSPC(Int(state.registers.a))
+            updateArithmeticZSPC(Int(state.registers.a), overflow: overflow)
         case .add_e:
-            let (result, _) = state.registers.a.addingReportingOverflow(state.registers.e)
+            let (result, overflow) = state.registers.a.addingReportingOverflow(state.registers.e)
             state.registers.a = result
-            updateArithmeticZSPC(Int(state.registers.a))
+            updateArithmeticZSPC(Int(state.registers.a), overflow: overflow)
         case .add_h:
-            let (result, _) = state.registers.a.addingReportingOverflow(state.registers.h)
+            let (result, overflow) = state.registers.a.addingReportingOverflow(state.registers.h)
             state.registers.a = result
-            updateArithmeticZSPC(Int(state.registers.a))
+            updateArithmeticZSPC(Int(state.registers.a), overflow: overflow)
         case .add_l:
-            let (result, _) = state.registers.a.addingReportingOverflow(state.registers.l)
+            let (result, overflow) = state.registers.a.addingReportingOverflow(state.registers.l)
             state.registers.a = result
-            updateArithmeticZSPC(Int(state.registers.a))
+            updateArithmeticZSPC(Int(state.registers.a), overflow: overflow)
         case .add_m:
             let value = memory[m_address()]
-            let (result, _) = state.registers.a.addingReportingOverflow(value)
+            let (result, overflow) = state.registers.a.addingReportingOverflow(value)
             state.registers.a = result
-            updateArithmeticZSPC(Int(state.registers.a))
+            updateArithmeticZSPC(Int(state.registers.a), overflow: overflow)
         case .add_a:
             throw Error.unhandledOperation(code)
         case .sub_b:
-            let (overflow, _) = state.registers.a.subtractingReportingOverflow(state.registers.b)
-            state.registers.a = overflow
-            updateArithmeticZSPC(Int(state.registers.a))
+            let (result, overflow) = state.registers.a.subtractingReportingOverflow(state.registers.b)
+            state.registers.a = result
+            updateArithmeticZSPC(Int(state.registers.a), overflow: overflow)
         case .sub_c:
-            let (overflow, _) = state.registers.a.subtractingReportingOverflow(state.registers.c)
-            state.registers.a = overflow
-            updateArithmeticZSPC(Int(state.registers.a))
+            let (result, overflow) = state.registers.a.subtractingReportingOverflow(state.registers.c)
+            state.registers.a = result
+            updateArithmeticZSPC(Int(state.registers.a), overflow: overflow)
         case .sub_d:
-            let (overflow, _) = state.registers.a.subtractingReportingOverflow(state.registers.d)
-            state.registers.a = overflow
-            updateArithmeticZSPC(Int(state.registers.a))
+            let (result, overflow) = state.registers.a.subtractingReportingOverflow(state.registers.d)
+            state.registers.a = result
+            updateArithmeticZSPC(Int(state.registers.a), overflow: overflow)
         case .sub_e:
-            let (overflow, _) = state.registers.a.subtractingReportingOverflow(state.registers.e)
-            state.registers.a = overflow
-            updateArithmeticZSPC(Int(state.registers.a))
+            let (result, overflow) = state.registers.a.subtractingReportingOverflow(state.registers.e)
+            state.registers.a = result
+            updateArithmeticZSPC(Int(state.registers.a), overflow: overflow)
         case .sub_h:
-            let (overflow, _) = state.registers.a.subtractingReportingOverflow(state.registers.h)
-            state.registers.a = overflow
-            updateArithmeticZSPC(Int(state.registers.a))
+            let (result, overflow) = state.registers.a.subtractingReportingOverflow(state.registers.h)
+            state.registers.a = result
+            updateArithmeticZSPC(Int(state.registers.a), overflow: overflow)
         case .sub_l:
-            let (overflow, _) = state.registers.a.subtractingReportingOverflow(state.registers.l)
-            state.registers.a = overflow
-            updateArithmeticZSPC(Int(state.registers.a))
+            let (result, overflow) = state.registers.a.subtractingReportingOverflow(state.registers.l)
+            state.registers.a = result
+            updateArithmeticZSPC(Int(state.registers.a), overflow: overflow)
         case .sub_m:
-            let (overflow, _) = state.registers.a.subtractingReportingOverflow(memory[m_address()])
-            state.registers.a = overflow
-            updateArithmeticZSPC(Int(state.registers.a))
+            let (result, overflow) = state.registers.a.subtractingReportingOverflow(memory[m_address()])
+            state.registers.a = result
+            updateArithmeticZSPC(Int(state.registers.a), overflow: overflow)
         case .sub_a:
             state.registers.a = 0
-            updateArithmeticZSPC(0)
+            updateArithmeticZSPC(0, overflow: false)
         case .ana_b:
             state.registers.a &= state.registers.b
             updateLogicZSPC(Int(state.registers.a))
@@ -521,10 +520,9 @@ public class CPU {
         case .push_b:
             try push(high: state.registers.b, low: state.registers.c)
         case .adi:
-            let value = memory[state.pc + 1]
-            let result = (UInt16(state.registers.a) + UInt16(value)) & 0xff
-            state.registers.a = UInt8(result)
-            updateArithmeticZSPC(Int(state.registers.a))
+            let (result, overflow) = state.registers.a.addingReportingOverflow(memory[state.pc + 1])
+            state.registers.a = result
+            updateArithmeticZSPC(Int(state.registers.a), overflow: overflow)
         case .rz:
             if state.condition_bits.zero == 1 {
                 try ret()
@@ -567,9 +565,9 @@ public class CPU {
         case .push_d:
             try push(high: state.registers.d, low: state.registers.e)
         case .sui:
-            let (overflow, _) = state.registers.a.subtractingReportingOverflow(memory[state.pc + 1])
-            state.registers.a = overflow
-            updateArithmeticZSPC(Int(state.registers.a))
+            let (result, overflow) = state.registers.a.subtractingReportingOverflow(memory[state.pc + 1])
+            state.registers.a = result
+            updateArithmeticZSPC(Int(state.registers.a), overflow: overflow)
         case .rc:
             if state.condition_bits.carry == 1 {
                 try ret()
@@ -599,9 +597,9 @@ public class CPU {
             state.registers.a = machineIn?(device) ?? state.registers.a
         case .sbi:
             let data = memory[state.pc + 1] + state.condition_bits.carry
-            let (overflow, _) = state.registers.a.subtractingReportingOverflow(data)
-            state.registers.a = overflow
-            updateArithmeticZSPC(Int(state.registers.a))
+            let (result, overflow) = state.registers.a.subtractingReportingOverflow(data)
+            state.registers.a = result
+            updateArithmeticZSPC(Int(state.registers.a), overflow: overflow)
         case .pop_h:
             let (high, low) = try pop()
             state.registers.h = high
@@ -704,11 +702,11 @@ public class CPU {
         state.condition_bits.parity = parity(value & 0xff)
     }
 
-    private func updateArithmeticZSPC(_ value: Int) {
+    private func updateArithmeticZSPC(_ value: Int, overflow: Bool) {
         state.condition_bits.zero = UInt8((value & 0xff) == 0)
         state.condition_bits.sign = UInt8(0x80 == (value & 0x80))
         state.condition_bits.parity = parity(value & 0xff)
-        state.condition_bits.carry = UInt8(value > 0xff)
+        state.condition_bits.carry = UInt8(overflow)
     }
 
     private func updateLogicZSPC(_ value: Int) {
