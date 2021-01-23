@@ -118,14 +118,13 @@ public class CPU {
             state.registers.a = ((value & 0x80) >> 7) | value << 1
             state.condition_bits.carry = UInt8((value & 0x80) == 0x80)
         case .dad_b_c:
-            let bc = Int(addressRegisterPair(state.registers.b, state.registers.c))
-            let hl = Int(addressRegisterPair(state.registers.h, state.registers.l))
+            let bc = addressRegisterPair(state.registers.b, state.registers.c)
+            let hl = addressRegisterPair(state.registers.h, state.registers.l)
 
-            let result = bc + hl
+            let (result, overflow) = bc.addingReportingOverflow(hl)
 
-            state.registers.h = UInt8((result & 0xff00) >> 8)
-            state.registers.l = UInt8(result & 0xff)
-            state.condition_bits.carry = UInt8((result & 0xffff0000) > 0)
+            write(result, pair: .hl)
+            state.condition_bits.carry = UInt8(overflow)
         case .ldax_b_c:
             let address = Int(addressRegisterPair(state.registers.b, state.registers.c))
             state.registers.a = memory[address]
@@ -156,14 +155,13 @@ public class CPU {
         case .mvi_d:
             state.registers.d = memory[state.pc + 1]
         case .dad_d_e:
-            let de = Int(addressRegisterPair(state.registers.d, state.registers.e))
-            let hl = Int(addressRegisterPair(state.registers.h, state.registers.l))
+            let de = addressRegisterPair(state.registers.d, state.registers.e)
+            let hl = addressRegisterPair(state.registers.h, state.registers.l)
 
-            let result = de + hl
+            let (result, overflow) = de.addingReportingOverflow(hl)
 
-            state.registers.h = UInt8((result & 0xff00) >> 8)
-            state.registers.l = UInt8(result & 0xff)
-            state.condition_bits.carry = UInt8((result & 0xffff0000) > 0)
+            write(result, pair: .hl)
+            state.condition_bits.carry = UInt8(overflow)
         case .ldax_d_e:
             let address = Int(addressRegisterPair(state.registers.d, state.registers.e))
             state.registers.a = memory[address]
@@ -191,10 +189,11 @@ public class CPU {
         case .mvi_h:
             state.registers.h = memory[state.pc + 1]
         case .dad_h_l:
-            let result = Int(addressRegisterPair(state.registers.h, state.registers.l)) * 2
-            state.registers.h = UInt8((result & 0xff00) >> 8)
-            state.registers.l = UInt8(result & 0xff)
-            state.condition_bits.carry = UInt8((result & 0xffff0000) > 0)
+            let hl = addressRegisterPair(state.registers.h, state.registers.l)
+            let (result, overflow) = hl.addingReportingOverflow(hl)
+
+            write(result, pair: .hl)
+            state.condition_bits.carry = UInt8(overflow)
         case .lhld:
             let address = Int(addressRegisterPair(memory[state.pc + 2], memory[state.pc + 1]))
             state.registers.l = memory[address]
