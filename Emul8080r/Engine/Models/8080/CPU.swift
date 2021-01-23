@@ -100,8 +100,7 @@ public class CPU {
         case .nop:
             break
         case .lxi_b_c:
-            state.registers.c = memory[state.pc + 1]
-            state.registers.b = memory[state.pc + 2]
+            writeImmediate(to: .bc)
         case .inx_b_c:
             var value = addressRegisterPair(state.registers.b, state.registers.c)
             value += 1
@@ -143,8 +142,7 @@ public class CPU {
             state.registers.a = ((accumulator & 1) << 7) | accumulator >> 1
             state.condition_bits.carry = UInt8((accumulator & 0x01) == 0x01)
         case .lxi_d_e:
-            state.registers.e = memory[state.pc + 1]
-            state.registers.d = memory[state.pc + 2]
+            writeImmediate(to: .de)
         case .inx_d_e:
             var value = addressRegisterPair(state.registers.d, state.registers.e)
             value += 1
@@ -179,8 +177,7 @@ public class CPU {
             state.condition_bits.carry = UInt8((state.registers.a & 0x01) == 0x01)
             state.registers.a = value
         case .lxi_h_l:
-            state.registers.l = memory[state.pc + 1]
-            state.registers.h = memory[state.pc + 2]
+            writeImmediate(to: .hl)
         case .shld:
             let address = Int(addressRegisterPair(memory[state.pc + 2], memory[state.pc + 1]))
             try write(state.registers.l, at: address)
@@ -764,6 +761,10 @@ public class CPU {
             state.registers.h = highValue
             state.registers.l = lowValue
         }
+    }
+
+    private func writeImmediate(to pair: RegisterPair) {
+        write(addressRegisterPair(memory[state.pc + 2], memory[state.pc + 1]), pair: pair)
     }
 
     private func write(_ value: UInt8, at address: Int) throws {
