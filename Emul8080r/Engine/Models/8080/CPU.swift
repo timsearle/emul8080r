@@ -210,10 +210,7 @@ public class CPU {
         case .inr_m:
             try increment(.m)
         case .dcr_m:
-            let offset = m_address()
-            let (result, _) = UInt8(memory[offset]).subtractingReportingOverflow(1)
-            try write(result, at: offset)
-            updateZSP(Int(result))
+            try decrement(.m)
         case .mvi_m:
             try write(memory[state.pc + 1], at: m_address())
         case .stc:
@@ -583,8 +580,9 @@ public class CPU {
                 return code.cycleCount
             }
         case .in:
-            let device = memory[state.pc + 1]
-            state.registers.a = machineIn?(device) ?? state.registers.a
+            break
+            //let device = memory[state.pc + 1]
+            //state.registers.a = machineIn?(device) ?? state.registers.a
         case .sbi:
             let data = memory[state.pc + 1] + state.condition_bits.carry
             let (result, overflow) = state.registers.a.subtractingReportingOverflow(data)
@@ -608,7 +606,7 @@ public class CPU {
         case .push_h:
             try push(high: state.registers.h, low: state.registers.l)
         case .ani:
-            state.registers.a = state.registers.a & memory[state.pc + 1]
+            state.registers.a &= memory[state.pc + 1]
             updateLogicZSPC(Int(state.registers.a))
         case .xchg:
             let h = state.registers.h
@@ -789,10 +787,6 @@ extension CPU {
     private func write(_ value: UInt8, at address: Int) throws {
         guard address >= 0x2000 else {
             throw Error.cannotWriteToROM(address)
-        }
-
-        guard address < 0x4000 else {
-            throw Error.cannotWriteOutsideExpectedRAM(address)
         }
 
         memory[address] = value
