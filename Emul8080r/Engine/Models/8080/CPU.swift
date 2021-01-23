@@ -210,9 +210,9 @@ public class CPU {
         case .mvi_l:
             state.registers.l = memory[state.pc + 1]
         case .lxi_sp:
-            state.sp = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
+            state.sp = Int(addressRegisterPair(memory[state.pc + 2], memory[state.pc + 1]))
         case .sta:
-            let address = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
+            let address =  Int(addressRegisterPair(memory[state.pc + 2], memory[state.pc + 1]))
             try write(state.registers.a, at: address)
         case .inr_m:
             let value = memory[m_address()]
@@ -229,7 +229,7 @@ public class CPU {
         case .stc:
             state.condition_bits.carry = 1
         case .lda:
-            let address = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
+            let address = Int(addressRegisterPair(memory[state.pc + 2], memory[state.pc + 1]))
             state.registers.a = memory[address]
         case .inr_a:
             let result = increment(&state.registers.a)
@@ -518,7 +518,7 @@ public class CPU {
             if state.condition_bits.zero == 0 {
                 let returnAddress = state.pc + code.size
                 try push(high: UInt8((returnAddress >> 8) & 0xff), low: UInt8(returnAddress & 0xff))
-                state.pc = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
+                state.pc = Int(addressRegisterPair(memory[state.pc + 2], memory[state.pc + 1]))
                 return code.cycleCount
             }
         case .push_b:
@@ -545,13 +545,13 @@ public class CPU {
             if state.condition_bits.zero == 1 {
                 let returnAddress = state.pc + code.size
                 try push(high: UInt8((returnAddress >> 8) & 0xff), low: UInt8(returnAddress & 0xff))
-                state.pc = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
+                state.pc = Int(addressRegisterPair(memory[state.pc + 2], memory[state.pc + 1]))
                 return code.cycleCount
             }
         case .call:
             let returnAddress = state.pc + code.size
             try push(high: UInt8((returnAddress >> 8) & 0xff), low: UInt8(returnAddress & 0xff))
-            state.pc = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
+            state.pc = Int(addressRegisterPair(memory[state.pc + 2], memory[state.pc + 1]))
             return code.cycleCount
         case .pop_d:
             let (high, low) = try pop()
@@ -570,7 +570,7 @@ public class CPU {
             if state.condition_bits.carry == 0 {
                 let returnAddress = state.pc + code.size
                 try push(high: UInt8((returnAddress >> 8) & 0xff), low: UInt8(returnAddress & 0xff))
-                state.pc = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
+                state.pc = Int(addressRegisterPair(memory[state.pc + 2], memory[state.pc + 1]))
                 return code.cycleCount
             }
         case .push_d:
@@ -675,12 +675,12 @@ public class CPU {
     }
 
     private func jump()  {
-        state.pc = Int("\(memory[state.pc + 2].hex)\(memory[state.pc + 1].hex)", radix: 16)!
+        state.pc = Int(addressRegisterPair(memory[state.pc + 2], memory[state.pc + 1]))
     }
 
     private func ret() throws {
         let (high, low) = try pop()
-        state.pc = Int("\(high.hex)\(low.hex)", radix: 16)!
+        state.pc = Int(addressRegisterPair(high, low))
     }
 
     private func call() {
