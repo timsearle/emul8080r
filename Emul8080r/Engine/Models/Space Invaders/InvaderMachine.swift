@@ -42,7 +42,7 @@ public final class InvaderMachine {
 
     var queue = DispatchQueue(label: "tim.test")
 
-    public func play() {
+    public func play(onError: @escaping (Error) -> ()) {
         queue.async {
             while true {
                 do {
@@ -53,6 +53,9 @@ public final class InvaderMachine {
                         print("Caching...")
                         UserDefaults.standard.setValue(try! JSONEncoder().encode(self.captureState()), forKey: "PreviousState")
                         print("Done")
+                    }
+                    DispatchQueue.main.async {
+                        onError(error)
                     }
                     break
                 }

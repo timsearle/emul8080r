@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2239C64D25BDAE2F0002D97F /* invaders.rom in Resources */ = {isa = PBXBuildFile; fileRef = 2239C64C25BDAE2E0002D97F /* invaders.rom */; };
 		22B63D8725A39509008E785F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B63D8625A39509008E785F /* AppDelegate.swift */; };
 		22B63D8925A39509008E785F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B63D8825A39509008E785F /* SceneDelegate.swift */; };
 		22B63D8B25A39509008E785F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B63D8A25A39509008E785F /* ViewController.swift */; };
@@ -26,6 +27,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2239C64C25BDAE2E0002D97F /* invaders.rom */ = {isa = PBXFileReference; lastKnownFileType = file; path = invaders.rom; sourceTree = "<group>"; };
 		22665471259E362C00297D3B /* OpCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpCode.swift; sourceTree = "<group>"; };
 		2266547D259F792000297D3B /* State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = State.swift; sourceTree = "<group>"; };
 		22665480259F7BDA00297D3B /* Disassembler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Disassembler.swift; sourceTree = "<group>"; };
@@ -118,6 +120,7 @@
 		22B63D8525A39509008E785F /* Emul8080r */ = {
 			isa = PBXGroup;
 			children = (
+				2239C64C25BDAE2E0002D97F /* invaders.rom */,
 				22B63DA825A399DC008E785F /* iOS */,
 				22B63D9B25A39527008E785F /* Engine */,
 				22B63D8625A39509008E785F /* AppDelegate.swift */,
@@ -207,6 +210,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2239C64D25BDAE2F0002D97F /* invaders.rom in Resources */,
 				22B63D9325A3950A008E785F /* LaunchScreen.storyboard in Resources */,
 				22B63D9025A3950A008E785F /* Assets.xcassets in Resources */,
 				22B63D8E25A39509008E785F /* Main.storyboard in Resources */,
@@ -383,11 +387,12 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = AFZ4443Y2P;
 				INFOPLIST_FILE = Emul8080r/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.searle.Emul8080r;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -407,11 +412,12 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = AFZ4443Y2P;
 				INFOPLIST_FILE = Emul8080r/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.searle.Emul8080r;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;

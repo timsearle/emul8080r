@@ -15,19 +15,21 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let romPath = CommandLine.arguments[1]
-        let enableCaching = CommandLine.arguments.last ?? "No"
-        let data = try! Data(contentsOf: URL(fileURLWithPath: romPath))
+        let data = try! Data(contentsOf: Bundle.main.url(forResource: "invaders", withExtension: "rom")!)
 
-        if enableCaching == "EnableCaching",
-           let data = UserDefaults.standard.data(forKey: "PreviousState"),
-           let saveState = try? JSONDecoder().decode(SaveState.self, from: data) {
-            self.spaceInvaders = InvaderMachine(saveState: saveState, loggingEnabled: false)
-            self.spaceInvaders.play()
-        } else {
+//        if enableCaching == "EnableCaching",
+//           let data = UserDefaults.standard.data(forKey: "PreviousState"),
+//           let saveState = try? JSONDecoder().decode(SaveState.self, from: data) {
+//            self.spaceInvaders = InvaderMachine(saveState: saveState, loggingEnabled: false)
+//            self.spaceInvaders.play { error in
+//                self.present(UIAlertController(title: "Game Halted", message: "You've hit an error: \(error)", preferredStyle: .alert), animated: true, completion: nil)
+//            }
+//        } else {
             self.spaceInvaders = InvaderMachine(rom: data, loggingEnabled: false)
-            self.spaceInvaders.play()
-        }
+            self.spaceInvaders.play { error in
+                self.present(UIAlertController(title: "Game Halted", message: "You've hit an error: \(error)", preferredStyle: .alert), animated: true, completion: nil)
+            }
+        //}
 
         CADisplayLink(target: self, selector: #selector(self.loadVideo)).add(to: .main, forMode: .common)
     }

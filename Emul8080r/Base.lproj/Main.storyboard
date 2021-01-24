@@ -23,10 +23,10 @@
                                 </constraints>
                             </imageView>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="9z5-GM-iVt">
-                                <rect key="frame" x="0.0" y="671" width="414" height="30"/>
+                                <rect key="frame" x="0.0" y="671" width="414" height="100"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wCF-IF-QjO">
-                                        <rect key="frame" x="0.0" y="0.0" width="138" height="30"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="138" height="100"/>
                                         <state key="normal" title="Left"/>
                                         <connections>
                                             <action selector="leftDown:" destination="BYZ-38-t0r" eventType="touchDown" id="VJc-Qz-HbU"/>
@@ -34,7 +34,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Gka-Wh-z5b">
-                                        <rect key="frame" x="138" y="0.0" width="138" height="30"/>
+                                        <rect key="frame" x="138" y="0.0" width="138" height="100"/>
                                         <state key="normal" title="Fire"/>
                                         <connections>
                                             <action selector="fireDown:" destination="BYZ-38-t0r" eventType="touchDown" id="flY-eA-m9w"/>
@@ -42,7 +42,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hO3-ya-RDy">
-                                        <rect key="frame" x="276" y="0.0" width="138" height="30"/>
+                                        <rect key="frame" x="276" y="0.0" width="138" height="100"/>
                                         <state key="normal" title="Right"/>
                                         <connections>
                                             <action selector="rightDown:" destination="BYZ-38-t0r" eventType="touchDown" id="XES-MU-xsH"/>
@@ -50,6 +50,9 @@
                                         </connections>
                                     </button>
                                 </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="A35-yK-lT2"/>
+                                </constraints>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="W2N-LT-hPb">
                                 <rect key="frame" x="0.0" y="191" width="414" height="30"/>
