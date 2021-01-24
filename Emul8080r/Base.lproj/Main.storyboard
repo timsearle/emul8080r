@@ -62,17 +62,21 @@
                                             <action selector="playerOneUp:" destination="BYZ-38-t0r" eventType="touchUpInside" id="jXA-sF-4sI"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3UM-CZ-kgP">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iKV-RG-fCK">
                                         <rect key="frame" x="138" y="0.0" width="138" height="30"/>
+                                        <state key="normal" title="2P Start"/>
+                                        <connections>
+                                            <action selector="playerTwoDown:" destination="BYZ-38-t0r" eventType="touchDown" id="sA7-vE-m6p"/>
+                                            <action selector="playerTwoUp:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Cge-1h-kKV"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3UM-CZ-kgP">
+                                        <rect key="frame" x="276" y="0.0" width="138" height="30"/>
                                         <state key="normal" title="Insert Coin"/>
                                         <connections>
                                             <action selector="coinDown:" destination="BYZ-38-t0r" eventType="touchDown" id="bCk-iY-2s7"/>
                                             <action selector="coinUp:" destination="BYZ-38-t0r" eventType="touchUpInside" id="cAb-s3-HfS"/>
                                         </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iKV-RG-fCK">
-                                        <rect key="frame" x="276" y="0.0" width="138" height="30"/>
-                                        <state key="normal" title="2P Start"/>
                                     </button>
                                 </subviews>
                             </stackView>

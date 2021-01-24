@@ -4,7 +4,7 @@ class ViewController: UIViewController {
     @IBOutlet var imageView: UIImageView! {
         didSet {
             imageView.contentMode = .scaleAspectFit
-            imageView.backgroundColor = .red
+            imageView.backgroundColor = .black
             imageView.layer.magnificationFilter = .nearest
             imageView.transform = CGAffineTransform(rotationAngle: 3 * .pi/2)
         }
@@ -14,7 +14,6 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
 
         let romPath = CommandLine.arguments[1]
         let enableCaching = CommandLine.arguments.last ?? "No"
