@@ -82,15 +82,10 @@ public class CPU {
         lastExecutionTime = now
     }
 
-    var previousCode: [(String, OpCode)] = []
-    var previousSP = 0
-
     public func execute() throws -> Int {
         guard let code = OpCode(rawValue: memory[Int(state.pc)]) else {
             throw Disassembler.Error.unknownCode(String(format: "%02x", memory[Int(state.pc)]))
         }
-
-        previousCode.append((String(state.pc, radix: 16), code))
 
         if loggingEnabled {
             DispatchQueue.main.async {
