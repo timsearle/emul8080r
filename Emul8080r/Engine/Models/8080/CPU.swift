@@ -161,6 +161,10 @@ public class CPU {
         case .ldax_d_e:
             let address = Int(addressRegisterPair(state.registers.d, state.registers.e))
             state.registers.a = memory[address]
+        case .dcx_d_e:
+            let value = addressRegisterPair(state.registers.d, state.registers.e)
+            let (result, _) = value.subtractingReportingOverflow(1)
+            write(result, pair: .de)
         case .mvi_e:
             state.registers.e = memory[state.pc + 1]
         case .cma:
@@ -185,6 +189,7 @@ public class CPU {
 
             if  lsb4 > 9 || state.condition_bits.aux_carry == 0x01 {
                 let (result, overflow) = state.registers.a.addingReportingOverflow(6)
+                state.registers.a = result
                 updateArithmeticZSPC(Int(result), overflow: overflow)
                 if overflow {
                     state.condition_bits.aux_carry = 0x01
@@ -197,6 +202,7 @@ public class CPU {
 
             if msb4 > 0x90 || state.condition_bits.carry == 0x01 {
                 let (result, overflow) = state.registers.a.addingReportingOverflow(0x60)
+                state.registers.a = result
                 updateArithmeticZSPC(Int(result), overflow: overflow)
             }
         case .mvi_h:
@@ -398,6 +404,36 @@ public class CPU {
             updateArithmeticZSPC(Int(state.registers.a), overflow: overflow)
         case .add_a:
             throw Error.unhandledOperation(code)
+        case .adc_b:
+            let (result, overflow) = state.registers.a.addingReportingOverflow(state.registers.b + state.condition_bits.carry)
+            state.registers.a = result
+            updateArithmeticZSPC(Int(state.registers.a), overflow: overflow)
+        case .adc_c:
+            let (result, overflow) = state.registers.a.addingReportingOverflow(state.registers.c + state.condition_bits.carry)
+            state.registers.a = result
+            updateArithmeticZSPC(Int(state.registers.a), overflow: overflow)
+        case .adc_d:
+            let (result, overflow) = state.registers.a.addingReportingOverflow(state.registers.d + state.condition_bits.carry)
+            state.registers.a = result
+            updateArithmeticZSPC(Int(state.registers.a), overflow: overflow)
+        case .adc_e:
+            let (result, overflow) = state.registers.a.addingReportingOverflow(state.registers.e + state.condition_bits.carry)
+            state.registers.a = result
+            updateArithmeticZSPC(Int(state.registers.a), overflow: overflow)
+        case .adc_h:
+            let (result, overflow) = state.registers.a.addingReportingOverflow(state.registers.h + state.condition_bits.carry)
+            state.registers.a = result
+            updateArithmeticZSPC(Int(state.registers.a), overflow: overflow)
+        case .adc_l:
+            let (result, overflow) = state.registers.a.addingReportingOverflow(state.registers.l + state.condition_bits.carry)
+            state.registers.a = result
+            updateArithmeticZSPC(Int(state.registers.a), overflow: overflow)
+        case .adc_m:
+            throw Error.unhandledOperation(code)
+        case .adc_a:
+            let (result, overflow) = state.registers.a.addingReportingOverflow(state.registers.a + state.condition_bits.carry)
+            state.registers.a = result
+            updateArithmeticZSPC(Int(state.registers.a), overflow: overflow)
         case .sub_b:
             let (result, overflow) = state.registers.a.subtractingReportingOverflow(state.registers.b)
             state.registers.a = result

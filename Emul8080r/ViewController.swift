@@ -85,5 +85,13 @@ class ViewController: UIViewController {
     @IBAction func playerOneUp(_ sender: Any) {
         spaceInvaders.start1P(state: .up)
     }
+
+    @IBAction func playerTwoDown(_ sender: Any) {
+        spaceInvaders.start2P(state: .down)
+    }
+
+    @IBAction func playerTwoUp(_ sender: Any) {
+        spaceInvaders.start2P(state: .up)
+    }
 }
 

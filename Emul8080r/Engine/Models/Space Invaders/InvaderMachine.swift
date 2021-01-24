@@ -105,6 +105,15 @@ public final class InvaderMachine {
         }
     }
 
+    public func start2P(state: ButtonState) {
+        switch state {
+        case .down:
+            inputPorts[1] |= 0x02
+        case .up:
+            inputPorts[1] &= ~0x02
+        }
+    }
+
     private func machineIn(_ port: UInt8) -> UInt8 {
         //print("READING CONTROLS \(port): \(String(inputPorts[Int(port)], radix: 2))")
 
