@@ -61,12 +61,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		22542A1C25BDE05B00948907 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				22B63D8F25A3950A008E785F /* Assets.xcassets */,
+				22B63D9425A3950A008E785F /* Info.plist */,
+				22B63DB325AA4409008E785F /* Emul8080r-Bridging-Header.h */,
+				2239C64C25BDAE2E0002D97F /* invaders.rom */,
+			);
+			path = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		2266545D259E35BC00297D3B = {
 			isa = PBXGroup;
 			children = (
 				22B63D8525A39509008E785F /* Emul8080r */,
 				22665467259E35BC00297D3B /* Products */,
-				22B63DB325AA4409008E785F /* Emul8080r-Bridging-Header.h */,
 			);
 			sourceTree = "<group>";
 		};
@@ -120,16 +130,9 @@
 		22B63D8525A39509008E785F /* Emul8080r */ = {
 			isa = PBXGroup;
 			children = (
-				2239C64C25BDAE2E0002D97F /* invaders.rom */,
+				22542A1C25BDE05B00948907 /* Supporting Files */,
 				22B63DA825A399DC008E785F /* iOS */,
 				22B63D9B25A39527008E785F /* Engine */,
-				22B63D8625A39509008E785F /* AppDelegate.swift */,
-				22B63D8825A39509008E785F /* SceneDelegate.swift */,
-				22B63D8A25A39509008E785F /* ViewController.swift */,
-				22B63D8C25A39509008E785F /* Main.storyboard */,
-				22B63D8F25A3950A008E785F /* Assets.xcassets */,
-				22B63D9125A3950A008E785F /* LaunchScreen.storyboard */,
-				22B63D9425A3950A008E785F /* Info.plist */,
 			);
 			path = Emul8080r;
 			sourceTree = "<group>";
@@ -146,6 +149,11 @@
 		22B63DA825A399DC008E785F /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				22B63D8625A39509008E785F /* AppDelegate.swift */,
+				22B63D8825A39509008E785F /* SceneDelegate.swift */,
+				22B63D8A25A39509008E785F /* ViewController.swift */,
+				22B63D8C25A39509008E785F /* Main.storyboard */,
+				22B63D9125A3950A008E785F /* LaunchScreen.storyboard */,
 				22B63DA925A399EA008E785F /* UIImage+Bitmap.swift */,
 				22B63DAD25A39A13008E785F /* Bitmap.swift */,
 			);
@@ -313,6 +321,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "${PROJECT_DIR}/Supporting Files/Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -369,6 +378,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "${PROJECT_DIR}/Supporting Files/Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -386,7 +396,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = AFZ4443Y2P;
-				INFOPLIST_FILE = Emul8080r/Info.plist;
+				INFOPLIST_FILE = "${PROJECT_DIR}/Emul8080r/Supporting Files/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -396,7 +406,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = dev.searle.Emul8080r;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				SWIFT_OBJC_BRIDGING_HEADER = "Emul8080r-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "${PROJECT_DIR}/Emul8080r/Supporting Files/Emul8080r-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -411,7 +421,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = AFZ4443Y2P;
-				INFOPLIST_FILE = Emul8080r/Info.plist;
+				INFOPLIST_FILE = "${PROJECT_DIR}/Emul8080r/Supporting Files/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -421,7 +431,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = dev.searle.Emul8080r;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				SWIFT_OBJC_BRIDGING_HEADER = "Emul8080r-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "${PROJECT_DIR}/Emul8080r/Supporting Files/Emul8080r-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
