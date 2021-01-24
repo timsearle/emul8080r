@@ -94,7 +94,7 @@ public class CPU {
 
         if loggingEnabled {
             DispatchQueue.main.async {
-                try! _ = self.disassembler.disassembleOpCode(offset: Int(self.state.pc))
+                try? _ = self.disassembler.disassembleOpCode(offset: Int(self.state.pc))
             }
         }
 
@@ -140,6 +140,9 @@ public class CPU {
             state.condition_bits.carry = UInt8((accumulator & 0x01) == 0x01)
         case .lxi_d_e:
             writeImmediate(to: .de)
+        case .stax_d_e:
+            let address = addressRegisterPair(state.registers.d, state.registers.e)
+            try write(state.registers.a, at: Int(address))
         case .inx_d_e:
             let value = addressRegisterPair(state.registers.d, state.registers.e)
             let (result, _) = value.addingReportingOverflow(1)
