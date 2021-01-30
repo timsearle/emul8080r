@@ -13,6 +13,7 @@ public final class CPU {
         case unhandledOperation(OpCode)
         case cannotWriteToROM(Int)
         case unknownCode(String)
+        case programTerminated
     }
 
     enum RegisterPair {
@@ -80,6 +81,11 @@ public final class CPU {
     }
 
     private func execute() throws -> Int {
+        guard state.pc < memory.count else {
+            // End of program
+            throw Error.programTerminated
+        }
+
         guard let code = OpCode(rawValue: memory[Int(state.pc)]) else {
             throw Error.unknownCode(String(memory[Int(state.pc)], radix: 16))
         }
