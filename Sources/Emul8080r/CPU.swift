@@ -153,6 +153,8 @@ public final class CPU {
 
             write(result, pair: .hl)
             state.condition_bits.carry = UInt8(overflow)
+        case .inr_h:
+            try increment(.h)
         case .ldax_d_e:
             let address = Int(addressRegisterPair(state.registers.d, state.registers.e))
             state.registers.a = memory[address]

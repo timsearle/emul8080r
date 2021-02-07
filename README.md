@@ -37,7 +37,6 @@ There is a chance there are currently issues with certain instructions that yet 
 | 0x1c                    | INR E       |
 | 0x1d                    | DCR E       |
 | 0x20                    | ?      |
-| 0x24                    | INR H       |
 | 0x25                    | DCR H       |
 | 0x28                    | ?       |
 | 0x2d                    | DCR L       |
