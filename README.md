@@ -18,7 +18,7 @@ The core type to get started with is `CPU`, this is where the all the instructio
 
 The Intel 8080 supported 256 instructions and emul8080r handles this via a switch from `0x00` through to `0xff`.
 
-### In Action
+### In action
 
 <img src="demo.gif" width=30% height=30% />
 
