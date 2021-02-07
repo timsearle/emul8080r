@@ -18,6 +18,10 @@ The core type to get started with is `CPU`, this is where the all the instructio
 
 The Intel 8080 supported 256 instructions and emul8080r handles this via a switch from `0x00` through to `0xff`.
 
+### In Action
+
+<img src="demo.gif" width=30% height=30% />
+
 ### Work in progress
 
 There are still many unimplemented instructions as the initial goal was to get Space Invaders running, over time will finalise populating these missing instructions and contributions are of course welcome!
