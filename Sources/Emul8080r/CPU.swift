@@ -125,6 +125,10 @@ public final class CPU {
         case .ldax_b_c:
             let address = Int(addressRegisterPair(state.registers.b, state.registers.c))
             state.registers.a = state.memory[address]
+        case .dcx_b_c:
+            let value = addressRegisterPair(state.registers.b, state.registers.c)
+            let (result, _) = value.subtractingReportingOverflow(1)
+            write(result, pair: .bc)
         case .inr_c:
             try increment(.c)
         case .dcr_c:

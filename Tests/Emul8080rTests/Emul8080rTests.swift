@@ -53,6 +53,34 @@ final class Emul8080rTests: XCTestCase {
         }
     }
 
+    func test_DCX_bc() throws {
+        let instructions: [UInt8] = [OpCode.mvi_b.rawValue, 0x05,
+                                     OpCode.mvi_c.rawValue, 0x05,
+                                     OpCode.dcx_b_c.rawValue]
+
+        let cpu = CPU(memory: instructions, systemClock: FakeClock())
+
+        var one = State8080(memory: instructions)
+        one.registers.b = 0x05
+        one.pc = 2
+
+        var two = one
+        two.pc = 4
+        two.registers.c = 0x05
+
+        var three = two
+        three.pc = 5
+        three.registers.b = 0x05
+        three.registers.c = 0x04
+
+        let expected = [one, two, three]
+
+        for i in 0..<3 {
+            _ = try cpu.execute()
+            XCTAssertEqual(cpu.state, expected[i])
+        }
+    }
+
     static var allTests = [
         ("testBasicInstructionSequence", testBasicInstructionSequence),
     ]
