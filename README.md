@@ -28,7 +28,6 @@ There is a chance there are currently issues with certain instructions that yet 
 
 | Instruction Value | Instruction Name |
 | ------------------- | -------------------  |
-| 0x02                    | STAX B       |
 | 0x08                    | ?       |
 | 0x0b                    | DCX B       |
 | 0x10                    | ?       |

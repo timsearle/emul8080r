@@ -1,4 +1,4 @@
-public struct ConditionBits: Codable {
+public struct ConditionBits: Codable, Equatable {
     var zero: UInt8 = 0
     var sign: UInt8 = 0
     var parity: UInt8 = 0
@@ -10,7 +10,7 @@ public struct ConditionBits: Codable {
     }
 }
 
-public struct Registers: CustomStringConvertible, Codable {
+public struct Registers: CustomStringConvertible, Codable, Equatable {
     var a: UInt8 = 0
     var b: UInt8 = 0
     var c: UInt8 = 0
@@ -32,7 +32,7 @@ public struct Registers: CustomStringConvertible, Codable {
     }
 }
 
-public struct State8080: CustomStringConvertible, Codable {
+public struct State8080: CustomStringConvertible, Codable, Equatable {
     var registers = Registers()
 
     var sp: Int = 0
@@ -41,7 +41,11 @@ public struct State8080: CustomStringConvertible, Codable {
 
     var inte = UInt8(0) // Interrupts Enabled
 
-    public init() {}
+    var memory: [UInt8]
+
+    public init(memory: [UInt8]) {
+        self.memory = memory
+    }
 
     mutating func updateConditionBits(_ byte: UInt8) {
         var bits = String(byte, radix: 2).map { UInt8("\($0)")! }

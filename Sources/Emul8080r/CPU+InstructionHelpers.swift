@@ -1,7 +1,7 @@
 extension CPU {
     // MARK: Control Flow
     func jump()  {
-        state.pc = Int(addressRegisterPair(memory[state.pc + 2], memory[state.pc + 1]))
+        state.pc = Int(addressRegisterPair(state.memory[state.pc + 2], state.memory[state.pc + 1]))
     }
 
     func ret() throws {
@@ -40,7 +40,7 @@ extension CPU {
             state.registers.l = result
         case .m:
             let address = m_address()
-            let value = memory[address]
+            let value = state.memory[address]
             (result, _) = value.addingReportingOverflow(1)
             try write(result, at: address)
         case .a:
@@ -75,7 +75,7 @@ extension CPU {
             state.registers.l = result
         case .m:
             let address = m_address()
-            let value = memory[address]
+            let value = state.memory[address]
             (result, _) = value.subtractingReportingOverflow(1)
             try write(result, at: address)
         case .a:
@@ -100,8 +100,8 @@ extension CPU {
     }
 
     func pop() throws -> (UInt8, UInt8) {
-        let high = memory[state.sp + 1]
-        let low = memory[state.sp]
+        let high = state.memory[state.sp + 1]
+        let low = state.memory[state.sp]
         state.sp += 2
 
         return (high, low)
@@ -126,15 +126,16 @@ extension CPU {
     }
 
     func writeImmediate(to pair: RegisterPair) {
-        write(addressRegisterPair(memory[state.pc + 2], memory[state.pc + 1]), pair: pair)
+        write(addressRegisterPair(state.memory[state.pc + 2], state.memory[state.pc + 1]), pair: pair)
     }
 
     func write(_ value: UInt8, at address: Int) throws {
-        guard address >= 0x2000 else {
-            throw Error.cannotWriteToROM(address)
+        if let bounds = safeMemoryBounds {
+            guard address >= bounds.lowerBound && address <= bounds.upperBound else {
+                throw Error.cannotWriteToROM(address)
+            }
         }
-
-        memory[address] = value
+        state.memory[address] = value
     }
 
     // MARK: Addressing
