@@ -1,21 +1,15 @@
 import XCTest
 @testable import Emul8080r
 
-struct FakeClock: SystemClock {
-    func currentMicroseconds() -> Double {
-        0
-    }
-}
-
 final class Emul8080rTests: XCTestCase {
     func testBasicInstructionSequence() throws {
         // Increment BC, Increment BC, Add immediate value 0x01 to accumulator, Add C to accumulator
-        let instructions: [UInt8] = [OpCode.inx_b_c.rawValue,
+        let program: [UInt8] = [OpCode.inx_b_c.rawValue,
                                      OpCode.inx_b_c.rawValue,
                                      OpCode.adi.rawValue, 0x01,
                                      OpCode.add_c.rawValue]
 
-        let cpu = CPU(memory: instructions, systemClock: FakeClock())
+        let cpu = CPU(memory: program, systemClock: FakeClock())
 
         for _ in 0..<4 {
             _ = try cpu.execute()
@@ -27,13 +21,13 @@ final class Emul8080rTests: XCTestCase {
     }
 
     func test_STAX_bc() throws {
-        let instructions: [UInt8] = [OpCode.adi.rawValue, 0x01,
+        let program: [UInt8] = [OpCode.adi.rawValue, 0x01,
                                      OpCode.mvi_c.rawValue, 0x05,
                                      OpCode.stax_b_c.rawValue, 0x00]
         
-        let cpu = CPU(memory: instructions, systemClock: FakeClock())
+        let cpu = CPU(memory: program, systemClock: FakeClock())
 
-        var one = State8080(memory: instructions)
+        var one = State8080(memory: program)
         one.registers.a = 0x01
         one.pc = 2
 
@@ -54,19 +48,20 @@ final class Emul8080rTests: XCTestCase {
     }
 
     func test_DCX_bc() throws {
-        let instructions: [UInt8] = [OpCode.mvi_b.rawValue, 0x05,
+        let program: [UInt8] = [OpCode.mvi_b.rawValue, 0x05,
                                      OpCode.mvi_c.rawValue, 0x05,
                                      OpCode.dcx_b_c.rawValue]
 
-        let cpu = CPU(memory: instructions, systemClock: FakeClock())
+        let cpu = CPU(memory: program, systemClock: FakeClock())
 
-        var one = State8080(memory: instructions)
+        var one = State8080(memory: program)
         one.registers.b = 0x05
+        one.registers.c = 0x05
         one.pc = 2
 
         var two = one
         two.pc = 4
-        two.registers.c = 0x05
+
 
         var three = two
         three.pc = 5
