@@ -498,6 +498,24 @@ public final class CPU {
         case .xra_b:
             state.registers.a ^= state.registers.b
             updateLogicZSPC(Int(state.registers.a))
+        case .xra_c:
+            state.registers.c &= state.registers.c
+            updateLogicZSPC(Int(state.registers.c))
+        case .xra_d:
+            state.registers.d &= state.registers.d
+            updateLogicZSPC(Int(state.registers.d))
+        case .xra_e:
+            state.registers.e &= state.registers.e
+            updateLogicZSPC(Int(state.registers.e))
+        case .xra_h:
+            state.registers.h &= state.registers.h
+            updateLogicZSPC(Int(state.registers.h))
+        case .xra_l:
+            state.registers.l &= state.registers.l
+            updateLogicZSPC(Int(state.registers.l))
+        case .xra_m:
+            state.registers.a &= state.memory[m_address()]
+            updateLogicZSPC(Int(state.registers.a))
         case .xra_a:
             state.registers.a ^= state.registers.a
             updateLogicZSPC(Int(state.registers.a))
