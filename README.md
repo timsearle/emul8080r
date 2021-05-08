@@ -32,9 +32,7 @@ There is a chance there are currently issues with certain instructions that yet 
 
 | Instruction Value | Instruction Name |
 | ------------------- | -------------------  |
-| 0x02                    | STAX B       |
 | 0x08                    | ?       |
-| 0x0b                    | DCX B       |
 | 0x10                    | ?       |
 | 0x17                    | RAL       |
 | 0x18                    | ?       |
@@ -59,12 +57,6 @@ There is a chance there are currently issues with certain instructions that yet 
 | 0x9d                    | SBB L       |
 | 0x9e                    | SBB M       |
 | 0x9f                     | SBB A       |
-| 0xa9                    | XRA C       |
-| 0xaa                    | XRA D       |
-| 0xab                    | XRA E      |
-| 0xac                    | XRA H      |
-| 0xad                    | XRA L      |
-| 0xae                    | XRA M       |
 | 0xc7                    | RST 0       |
 | 0xcb                    | ?       |
 | 0xce                    | ACI D8       |
