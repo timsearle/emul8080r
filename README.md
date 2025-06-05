@@ -12,23 +12,145 @@
 
 **Emul8080r** is an Intel 8080 emulator written in Swift! Created initially to support a full emulation of the classic Space Invaders 👾 game on Apple platforms, found [here](https://github.com/timsearle/SpaceInvaders).
 
-### Getting started
+## Installation
 
-The core type to get started with is `CPU`, this is where the all the instruction handling is interpreted, with all the helper functions for each instruction found in `CPU+InstructionHelpers`. Get started by initialising an instance of `CPU` with the available RAM and an implementation of a `SystemClock` to allow the emulate to approximate the speed at which it should be operating on the native system.
+### Swift Package Manager
+
+#### Xcode
+1. Open your project in Xcode
+2. Go to File → Add Package Dependencies
+3. Enter the repository URL: `https://github.com/timsearle/emul8080r`
+4. Select the version and add to your target
+
+#### Package.swift
+```swift
+dependencies: [
+    .package(url: "https://github.com/timsearle/emul8080r", from: "1.0.0")
+]
+```
+
+## Quick Start
+
+```swift
+import Emul8080r
+
+// Implement a simple clock
+struct SimpleClock: SystemClock {
+    func currentMicroseconds() -> Double {
+        return Date().timeIntervalSince1970 * 1_000_000
+    }
+}
+
+// Create CPU with 64KB memory
+let memory = Array(repeating: UInt8(0), count: 65536)
+let cpu = CPU(memory: memory, systemClock: SimpleClock())
+
+// Load ROM data
+let romData: [UInt8] = // your ROM bytes here
+cpu.load(romData)
+
+// Execute instructions
+do {
+    try cpu.emulateCycle()
+} catch {
+    print("Emulation error: \(error)")
+}
+```
+
+## Architecture Overview
+
+The emulator is built with a modular design:
+
+- **CPU**: Core processor logic handling instruction execution
+- **State8080**: Manages registers, flags, and memory
+- **Disassembler**: Provides debugging capabilities
+- **IOBus Protocol**: Interface for hardware I/O operations
+- **SystemClock Protocol**: Timing control for authentic speed emulation
 
 The Intel 8080 supported 256 instructions and emul8080r handles this via a switch from `0x00` through to `0xff`.
+
+## API Documentation
+
+### Core Classes
+
+#### `CPU`
+The main emulator class that handles instruction execution and state management.
+
+**Key Methods:**
+- `init(memory: [UInt8], systemClock: SystemClock, safeMemoryBounds: Range<UInt8>? = nil)` - Initialize CPU with memory and clock
+- `load(_ data: [UInt8])` - Load ROM data into memory
+- `emulateCycle() throws` - Execute one CPU cycle
+- `step() throws` - Execute one instruction and return its info
+
+**Properties:**
+- `state: State8080` - Current CPU state (registers, flags, memory)
+- `bus: IOBus?` - I/O interface for hardware communication
+
+#### `State8080`
+Represents the complete state of the Intel 8080 processor.
+
+**Key Components:**
+- `registers: Registers` - CPU registers (A, B, C, D, E, H, L)
+- `conditionBits: ConditionBits` - Status flags (zero, sign, parity, carry, aux_carry)
+- `stackPointer: UInt16` - Stack pointer
+- `programCounter: UInt16` - Program counter
+- `memory: [UInt8]` - System memory
+
+### Protocols
+
+#### `SystemClock`
+Implement this protocol to provide timing for authentic emulation speed.
+```swift
+protocol SystemClock {
+    func currentMicroseconds() -> Double
+}
+```
+
+#### `IOBus`
+Implement this protocol to handle hardware I/O operations.
+```swift
+protocol IOBus: AnyObject {
+    func machineIN(port: UInt8) -> UInt8
+    func machineOUT(port: UInt8, accumulator: UInt8)
+}
+```
+
+## Testing
+
+Run the test suite with:
+```bash
+swift test
+```
+
+Build the package:
+```bash
+swift build
+```
+
+For Xcode development:
+```bash
+swift package generate-xcodeproj
+```
 
 ### In action
 
 <img src="demo.gif" width=30% height=30% />
 
-### Work in progress
+## Project Status
 
-There are still many unimplemented instructions as the initial goal was to get Space Invaders running, over time will finalise populating these missing instructions and contributions are of course welcome!
+**Implementation Progress:** ~75% complete (196 of 256 instructions implemented)
 
-There is a chance there are currently issues with certain instructions that yet to be discovered - I did not prioritise unit tests during the initial implementation but this is something planned to be improved over time! If you spot an issue, feel free to raise a PR.
+The emulator currently supports all instructions needed for Space Invaders and many other classic 8080 programs. Development is ongoing to implement the remaining instructions for full 8080 compatibility.
 
-**Outstanding Instructions**
+### Current Status
+- ✅ All basic arithmetic and logical operations
+- ✅ Memory operations and addressing modes  
+- ✅ Jump, call, and return instructions
+- ✅ Stack operations
+- ⚠️ Some specialized instructions pending (see table below)
+- ⚠️ Unit test coverage needs improvement
+
+### Outstanding Instructions (60 remaining)**
 
 | Instruction Value | Instruction Name |
 | ------------------- | -------------------  |
